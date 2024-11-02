@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="static/styles/main.css">
+</head>
+<body>
+    <div class="my_container">
+        <h1 class = "display-4" style="text-align: center;">Welcome to A-Z Household Services</h1>
+        <div class="my_panel">
+            <div style="text-align: center;"><h3>Login Page for exiting Customer/ Service Professional</h3></div>
+            <form action="/login" method="POST">
+                <div class="input_form">
+                    <div class="mb-3">
+                        <label for="user_name" class="form-label">User ID (E-Mail)</label>
+                        <input type="email" class="form-control" name="user_name" id="user_name" placeholder="iitm@study.ac.in">
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" name="password" id="password" placeholder="password">
+                    </div>
+                    <div class="mb-3" style="text-align: center;">
+                        <button type="submit" class="btn btn-primary">Login</button> <br><br>
+                        <div class="center" style="text-align: center; margin-bottom: 20px;">
+                        New user? <a href="/signup">Signup</a><br>
+                        New service professional? <a href="/register">Register</a><br>
+                        Go to home page: <a href="/">Home Page</a>
+                        </div>
+                        <div class="err_msg">{{msg}}</div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</body>
+</html>

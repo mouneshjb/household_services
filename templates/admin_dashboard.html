@@ -1,37 +1,76 @@
 {%extends "admin_layout.html"%} <!--Inherited all nav features-->
 {%block content%}
-                  <div class="container">
-                    {%if theatres%}
-                      <div class="row">
-                      {%for theatre in theatres%}
-                        <div class="col">
-                        <!--Venue1 card here-->
-                            <div class="card" style="width: 18rem;">
-                            <div class="card-body">
-                              <h5 class="card-title">{{theatre.name}}</h5>
-                              <h6 class="card-subtitle mb-2 text-muted">{{theatre.location}}</h6>
-                              {%if theatre.shows%}
-                                <table>
-                                <tr><th>ID</th><th>Name</th><th>Dt/Time</th></tr>
-                                {%for show in theatre.shows%}
-                                  <tr><td>{{show.id}}</td><td>{{show.name}}</td><td>{{show.date_time}}</td></tr>
-                                {%endfor%}
-                                </table>
-                              {%else%}
-                                <p>No, shows here!</p>
-                              {%endif%}
-                              <a href="/show/{{theatre.id}}/{{name}}" type="button" class="btn btn-outline-primary">+Add Show</a>
-                            </div>
-                          </div>
-                        <!--End of Venu1-->
-                        </div>
-                     {%endfor%}
+                
+<div>
+                    <div style="text-align: center;">
+                      <p style="margin: auto ;"><b>Current Services</b> </p>
+                    </div>
+
+                      <div style="width:1000px; height:150px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
+                    
+                        <table cellspacing="0" cellpadding="1" border="1" width="980" style="margin: auto;">
+                          <tr style="color:white;background-color:grey;text-align: center;position: sticky;">
+                            <th>Sl No.</th>
+                            <th>Service Name</th>
+                            <th>Base Price</th>
+                            <th>Average Time Required</th>
+                            <th>Action</th>
+                        </tr>
+                         {% for service in services%} 
+                        <tr>
+                            <td>{{loop.index}}</td>
+                            <td>{{service.name}}</td>
+                            <td>INR {{service.base_price}}</td>
+                            <td>{{service.avg_time_req}} hours</td>
+                            <td>
+                              <a href="/service/update/{{service.id}}" type="button" class="btn btn-info">Edit</a>
+                              <a href="/service/delete/{{service.id}}" type="button" class="btn btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                        {% endfor%}
+                        </table>  
+                        
                       </div>
-                    {%else%}
-                      <h3 class="center">No Venues are available!!</h3>
-                    {%endif%}
-                  </div>
-                <div class="center">
-                  <a href="/venue/{{name}}" type="button" class="btn btn-primary">+Add Venue</a></div>
+                      <div class="center" style="margin: auto; text-align: center;">
+                        <a href="/add/service/" type="button" class="btn btn-primary">+Add New Service</a></div>
+                      
+                      <br>
+                  
+                
+                    <div style="text-align: center;">
+                    <p style="margin: auto ;"><b>Pending Verification of Service Professionals</b> </p>
+                    </div>
+
+                      <div style="width:1000px; height:150px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
+                    
+                        <table cellspacing="0" cellpadding="1" border="1" width="980" style="margin: auto;">
+                          <tr style="color:white;background-color:grey;text-align: center;position: sticky;">
+                            <th>Sl No.</th>
+                            <th>Name</th>
+                            <th>Service Name</th>
+                            <th>Experience Since</th>
+                            <th>Base Price</th>
+                            <th>Location</th>
+                            <th>Document</th>
+                            <th>Action</th>
+                        </tr>
+                          {%for sp in service_professionals%} 
+                        <tr>
+                            <td>{{loop.index}}</td>
+                            <td>{{sp.name}}</td>
+                            <td>{{sp.service_name}}</td>
+                            <td>{{sp.exp_since}}</td>
+                            <td>INR {{sp.price}}</td>
+                            <td>{{sp.location}}</td>
+                            <td><a href="/download/document/{{sp.id}}">Download</a></td>
+                            <td>
+                              <a href="/service_professional/acceptance/{{sp.id}}" type="button" class="btn btn-success">Accept</a>
+                              <a href="/service_professional/rejection/{{sp.id}}" type="button" class="btn btn-danger">Reject</a>
+                            </td>
+                        </tr>
+                        {%endfor%}
+                        </table>
+</div>
+
   {%endblock%}
            

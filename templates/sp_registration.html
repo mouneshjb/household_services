@@ -45,12 +45,9 @@
                             <label for="service_name" class="form-label">Service Type</label><br>
                             <select name="service_name" class="form-control" required>
                                 <option value="">select a service</option>
-                                <option value="cleaning">Cleaning</option>
-                                <option value="salon">Salon Serivces</option>
-                                <option value="carpenting">Carpenting</option>
-                                <option value="plumbing">Plumbing</option>
-                                <option value="painting">Painting</option>
-                                <option value="massage">Massage Serivces</option>
+                                {%for service in services%}
+                                <option value="{{service.name}}">{{service.name}}</option>
+                                {%endfor%}
                             </select>
                             
                             <!-- <input type="email" class="form-control" name="user_name" id="user_name"> -->

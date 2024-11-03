@@ -1,0 +1,31 @@
+{%extends "admin_layout.html"%} <!--Inherited all nav features-->
+{%block content%}
+<br>
+    <div>
+        <div style="text-align: center;"><h3>{{heading}}</h3></div>
+        <form action="/add/service/" method="POST">
+        <div class="input_form" style="margin: auto; margin-top: 10px; height: 450px;">
+            <div class="mb-3">
+                <label for="name" class="form-label">Service Name</label>
+                <input type="name" class="form-control" name="name" id="name" placeholder='{{service_name}}''>
+            </div>
+            <div class="mb-3">
+                <label for="base_price" class="form-label">Base Price (in INR)</label>
+                <input type="base_price" class="form-control" name="base_price" id="base_price" placeholder='{{base_price}}''>
+            </div>
+            <div class="mb-3">
+                <label for="avg_time_req" class="form-label">Average time required (in hours)</label>
+                <input type="avg_time_req" class="form-control" name="avg_time_req" id="avg_time_req" placeholder='{{time_req}}''>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <input type="text" class="form-control" name="description" id="description" placeholder='{{description}}'>
+            </div>
+            <div class="mb-3" style="text-align: center; margin-top: 20px;">
+                <button type="submit" class="btn btn-primary" style="text-align: center; margin: auto;">{{action}}</button>
+                <button type="submit" formaction="/admin_dashboard" class="btn btn-primary" style="text-align: center; margin: auto;">Cancel</button>
+            </div>
+        </div>
+        </form>
+
+{%endblock%}

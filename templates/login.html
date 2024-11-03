@@ -16,8 +16,8 @@
             <form action="/login" method="POST">
                 <div class="input_form">
                     <div class="mb-3">
-                        <label for="user_name" class="form-label">User ID (E-Mail)</label>
-                        <input type="email" class="form-control" name="user_name" id="user_name" placeholder="iitm@study.ac.in">
+                        <label for="email" class="form-label">User ID (E-Mail)</label>
+                        <input type="email" class="form-control" name="email" id="email" placeholder="iitm@study.ac.in">
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
@@ -30,6 +30,7 @@
                         New service professional? <a href="/register">Register</a><br>
                         Go to home page: <a href="/">Home Page</a>
                         </div>
+                        <br>
                         <div class="err_msg">{{msg}}</div>
                     </div>
                 </div>

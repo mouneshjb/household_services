@@ -31,3 +31,9 @@
     font-size: 16px;
     text-align: justify;
 }
+
+.err_msg{
+    text-align: center;
+    margin: auto;
+    color: maroon;
+}

@@ -10,7 +10,7 @@
             <h1 class = "display-4" style="text-align: center;">Welcome to A-Z Household Services</h1>
             <div class="my_panel">
                 <div style="text-align: center;"><h3>Registration page for new service provider</h3></div>
-                <form action="/register" method="POST" style="text-align: center;">
+                <form action="/register" method="POST" style="text-align: center;" enctype="multipart/form-data">
                     <div class="input_form" style="margin-top: 10px; height: 520px; display: inline-block;">
                         <div class="mb-3">
                             <label for="email" class="form-label">Service Provider ID (E-Mail)</label>
@@ -43,22 +43,23 @@
                     <div class="input_form" style="margin-top: 10px;margin-right: 20px; height: 405px; display: inline-block;">
                         <div class="mb-3">
                             <label for="service_name" class="form-label">Service Type</label><br>
-                            <select required>
+                            <select name="service_name" class="form-control" required>
                                 <option value="">select a service</option>
                                 <option value="cleaning">Cleaning</option>
-                                <option value="salon_sevrice">Salon Serivces</option>
+                                <option value="salon">Salon Serivces</option>
                                 <option value="carpenting">Carpenting</option>
                                 <option value="plumbing">Plumbing</option>
                                 <option value="painting">Painting</option>
                                 <option value="massage">Massage Serivces</option>
                             </select>
+                            
                             <!-- <input type="email" class="form-control" name="user_name" id="user_name"> -->
                         </div>
                         <div class="mb-3">
-                            <form action="/action_page.php" enctype="multipart/form-data">
-                                <label for="myfile">Please upload verification document:</label>
-                                <input type="file" id="myfile" name="myfile" />
-                            </form>
+                            
+                                <label for="sp_doc">Please upload verification document:</label>
+                                <input type="file" id="sp_doc" name="sp_doc" />
+                            
                         </div>
                         
                         <div class="mb-3">
@@ -70,19 +71,19 @@
                             <input type="description" class="form-control" name="description" id="description" placeholder="We offer living room, kitchen, bathroom cleaning services">
                         </div>
                         <div class="mb-3">
-                            <label for="exp_since" class="form-label">Experience since?</label>
-                            <input type="exp_since" class="form-control" name="expe_since" id="expe_since" placeholder="2020">
+                            <label for="exp_since" class="form-label">Experience since? (Enter Year)</label>
+                            <input type="exp_since" class="form-control" name="exp_since" id="exp_since" placeholder="2020">
                         </div>
                     
                     </div>
                     <div class="mb-3" style="text-align: center; margin-top: 10px;">
                         <button type="submit" class="btn btn-primary" style="text-align: center; margin: auto;">Register</button><br>
+                        <div class="err_msg">{{msg}}</div>
                         <div class="center" style="text-align: center; margin-bottom: 20px;">
                         Existing service professional/customer? <a href="/login">Login</a><br>
                         New customer? <a href="/signup">Signup</a><br>
                         Go to home page: <a href="/">Home Page</a>
-                        </div>
-                        <div class="err_msg">{{msg}}</div>
+                    </div>
                     </div>
                 </form>
             </div>

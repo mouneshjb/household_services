@@ -1,0 +1,65 @@
+{%extends "admin_layout.html"%} <!--Inherited all nav features-->
+{%block content%}
+
+<div style="text-align: center;">
+    <p style="margin: auto ;"><b>Customer Details</b> </p>
+  </div>
+  <div style="width:990px; height:450px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
+                    
+    <table cellspacing="0" cellpadding="1" border="1" width="980" style="margin: auto;">
+    <tr style="color:white;background-color:grey;text-align: center;position: sticky;">
+        <th>Sl. No.</th>
+        <th>Parameter</th>
+        <th>Value</th>
+    </tr>
+      
+    <tr>
+        <td>1</td>
+        <td>Name</td>
+        <td>{{customer.name}}</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>Email ID</td>
+        <td>{{customer.email}}</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>Date of Signup</td>
+        <td>{{customer.date_of_signup}}</td>
+    </tr>
+    <tr>
+        <td>4</td>
+        <td>Location</td>
+        <td>{{customer.location}}</td>
+    </tr>
+    <tr>
+        <td>5</td>
+        <td>Pincode</td>
+        <td>{{customer.pin_code}}</td>
+    </tr>
+    <tr>
+        <td>6</td>
+        <td>Contact Number</td>
+        <td>{{customer.contact_number}}</td>
+    </tr>
+    <tr>
+        <td>7</td>
+        <td>Status</td>
+        <td>{{customer.status}}</td>
+    </tr>
+    </table>
+    <br>
+    {%if (customer.status == 'Active')%}
+    <a href="/admin/customer/flag/{{customer.id}}/{{uname}}" type="button" class="btn btn-warning" style="display: inline;">Flag</a>
+    <a href="/admin/customer/block/{{customer.id}}/{{uname}}" type="button" class="btn btn-danger" style="display: inline;">Block</a>
+    {%elif (customer.status == 'Flagged')%}
+    <a href="/admin/customer/block/{{customer.id}}/{{uname}}" type="button" class="btn btn-danger" style="display: inline;">Block</a>
+    <a href="/admin/customer/active/{{customer.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;">Unflag</a>
+    {%elif (customer.status == 'Blocked')%}
+    <a href="/admin/customer/active/{{customer.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;">Unblock</a>
+    <a href="/admin/customer/flag/{{customer.id}}/{{uname}}" type="button" class="btn btn-warning" style="display: inline;">Flag</a>
+    {%endif%}
+  </div>
+
+{%endblock%}

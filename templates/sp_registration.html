@@ -40,7 +40,7 @@
                 
                 <!-- Second set of adjacent inputs -->
                 
-                    <div class="input_form" style="margin-top: 10px;margin-right: 20px; height: 405px; display: inline-block;">
+                    <div class="input_form" style="margin-top: 10px;margin-right: 20px; height: 500px; display: inline-block;">
                         <div class="mb-3">
                             <label for="service_name" class="form-label">Service Type</label><br>
                             <select name="service_name" class="form-control" required>
@@ -55,13 +55,17 @@
                         <div class="mb-3">
                             
                                 <label for="sp_doc">Please upload verification document:</label>
-                                <input type="file" id="sp_doc" name="sp_doc" />
+                                <input type="file" id="sp_doc" name="sp_doc">
                             
                         </div>
                         
                         <div class="mb-3">
                             <label for="price" class="form-label">Average Price Charged (in INR)</label>
                             <input type="price" class="form-control" name="price" id="price" placeholder="500">
+                        </div>
+                        <div class="mb-3">
+                            <label for="avg_time" class="form-label">Average Time Taken (in hours)</label>
+                            <input type="avg_time" class="form-control" name="avg_time" id="avg_time" placeholder="1">
                         </div>
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>

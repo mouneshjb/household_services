@@ -1,0 +1,167 @@
+{%extends "admin_layout.html"%} <!--Inherited all nav features-->
+{%block content%}
+
+{%if search == 'service'%}
+                {%if services%}
+                <div style="text-align: center; margin: auto;">
+                    <p style="margin: auto;"><b>Result for Services</b></p>
+                    </div>
+                      <div style="width:1000px; height:500px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
+                    
+                        <table cellspacing="0" cellpadding="1" border="1" width="980" style="margin: auto;">
+                            <tr style="color:white;background-color:grey;text-align: center;position: sticky;">
+                              <th>Sl No.</th>
+                              <th>Service Name</th>
+                              <th>Base Price</th>
+                              <th>Average Time Required</th>
+                              <th>Action</th>
+                          </tr>
+                           {% for service in services %} 
+                          <tr>
+                              <td>{{loop.index}}</td>
+                              <td>{{service.name}}</td>
+                              <td>INR {{service.base_price}}</td>
+                              <td>{{service.avg_time_req}} hours</td>
+                              <td>
+                                <a href="/admin/service/update/{{service.id}}/{{uname}}" type="button" class="btn btn-info">Edit</a>
+                                <a href="/admin/service/delete/{{service.id}}/{{uname}}" type="button" class="btn btn-danger">Delete</a>
+                              </td>
+                          </tr>
+                          {% endfor %}
+                          </table>  
+                        {%else%}
+                      <br>
+                      <div style="margin: auto;text-align: center;border: 1px;"><h2>No services found!</h2></div>
+                    {%endif%}
+                      </div>
+
+{%elif search == 'sp'%}
+                <div style="text-align: center; margin: auto;">
+                    <p style="margin: auto;"><b>Result for Service Professionals</b></p>
+                    </div>
+                {%if service_professionals%}
+                      <div style="width:1000px; height:500px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
+                    
+                        <table cellspacing="0" cellpadding="1" border="1" width="980" style="margin: auto;">
+                          <tr style="color:white;background-color:grey;text-align: center;position: sticky;">
+                            <th>Sl No.</th>
+                            <th>Name</th>
+                            <th>Service Name</th>
+                            <th>Experience Since</th>
+                            <th>Base Price</th>
+                            <th>Location</th>
+                            <th>Document</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                          {%for sp in service_professionals%} 
+                        <tr>
+                            <td><a href="/admin/sp_details/{{sp.id}}/{{uname}}">{{loop.index}}</a></td>
+                            <td>{{sp.name}}</td>
+                            <td>{{sp.service_name}}</td>
+                            <td>{{sp.exp_since}}</td>
+                            <td>INR {{sp.price}}</td>
+                            <td>{{sp.location}}</td>
+                            <td><a href="/admin/download/document/{{sp.id}}/{{uname}}">Download</a></td>
+                            <td>{{sp.status}}</td>
+                            <td>
+                                {%if (sp.status == 'Registered')%}
+                                <a href="/service_professional/accept/{{sp.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;width: 75px;">Accept</a>
+                                <a href="/service_professional/reject/{{sp.id}}/{{uname}}" type="button" class="btn btn-danger" style="display: inline;width: 75px;">Reject</a>
+                                {%elif (sp.status == 'Active')%}
+                                <a href="/service_professional/block/{{sp.id}}/{{uname}}" type="button" class="btn btn-danger" style="display: inline;width: 75px;">Block</a>
+                                {%elif (sp.status == 'Blocked')%}
+                                <a href="/service_professional/unblock/{{sp.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;width: 75px;">Unblock</a>
+                                {%elif (sp.status == 'Rejected')%}
+                                <a href="/service_professional/accept/{{sp.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;width: 75px;">Accept</a>
+                                {%endif%}
+                            </td>
+                        </tr>
+                        {%endfor%}
+                        </table>
+                        {%else%}
+                      <br>
+                      <div style="margin: auto;text-align: center;border: 1px;"><h2>No professsionals found!</h2></div>
+                    {%endif%}
+                      </div>
+    {%elif search == 'request'%}
+                <div style="text-align: center; margin: auto;">
+                    <p style="margin: auto;"><b>Result for Service Requests</b></p>
+                    </div>
+                      {%if service_requests%}
+                      <div style="width:1000px; height:500px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
+                    
+                        <table cellspacing="0" cellpadding="1" border="1" width="980" style="margin: auto;">
+                          <tr style="color:white;background-color:grey;text-align: center;position: sticky;">
+                            <th>Sl No.</th>
+                            <th>Customer Name</th>
+                            <th>Service Name</th>
+                            <th>Professional Since</th>
+                            <th>Price</th>
+                            <th>Customer Location</th>
+                            <th>Pincode</th>
+                            <th>Date of request</th>
+                            <th>Date of schedule</th>
+                            <th>Status</th>
+                        </tr>
+                          {%for sr in service_requests%} 
+                        <tr>
+                            <td><a href="/admin/sr_details/{{sr.id}}/{{uname}}">{{loop.index}}</a></td>
+                            <td>{{sr.customer.name}}</td>
+                            <td>{{sr.service.name}}</td>
+                            <td>{{sr.service_professional.name}}</td>
+                            <td>INR {{sr.service_professional.price}}</td>
+                            <td>{{sr.customer.location}}</td>
+                            <td>{{sr.customer.pin_code}}</td>
+                            <td>{{sr.date_of_request}}</td>
+                            <td>{{sr.date_of_schedule}}</td>
+                            <td>{{sr.status}}</td>
+                        </tr>
+                        {%endfor%}
+                        </table>
+                        {%else%}
+                      <br>
+                      <div style="margin: auto;text-align: center;border: 1px;"><h2>No service requests found!</h2></div>
+                {%endif%}
+        
+    {%elif search == 'customer'%}
+            <div style="text-align: center; margin: auto;">
+                <p style="margin: auto;"><b>Result for Customers</b></p>
+                </div>
+                {%if customers%}
+                <div style="width:1000px; height:500px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
+              
+                  <table cellspacing="0" cellpadding="1" border="1" width="980" style="margin: auto;">
+                    <tr style="color:white;background-color:grey;text-align: center;position: sticky;">
+                      <th>Sl No.</th>
+                      <th>Customer Name</th>
+                      <th>Customer Email</th>
+                      <th>Date of Signup</th>
+                      <th>Contact Number</th>
+                      <th>Customer Location</th>
+                      <th>Pincode</th>
+                      <th>Status</th>
+                  </tr>
+                    {%for customer in customers%} 
+                  <tr>
+                      <td><a href="/admin/customer_details/{{customer.id}}/{{uname}}">{{loop.index}}</a></td>
+                      <td>{{customer.name}}</td>
+                      <td>{{customer.email}}</td>
+                      <td>{{customer.date_of_signup}}</td>
+                      <td>{{customer.contact_number}}</td>
+                      <td>{{customer.location}}</td>
+                      <td>{{customer.pin_code}}</td>
+                      <td>{{customer.status}}</td>
+                      
+                  </tr>
+                  {%endfor%}
+                  </table>
+                  {%else%}
+                <br>
+                <div style="margin: auto;text-align: center;border: 1px;"><h2>No customer found!</h2></div>
+                {%endif%}
+
+          {%endif%}
+
+
+{%endblock%}

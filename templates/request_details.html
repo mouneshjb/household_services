@@ -1,0 +1,55 @@
+{%extends "admin_layout.html"%} <!--Inherited all nav features-->
+{%block content%}
+
+<div style="text-align: center;">
+    <p style="margin: auto ;"><b>Service Request Details</b> </p>
+  </div>
+  <div style="width:990px; height:450px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
+                    
+    <table cellspacing="0" cellpadding="1" border="1" width="980" style="margin: auto;">
+    <tr style="color:white;background-color:grey;text-align: center;position: sticky;">
+        <th>Sl. No.</th>
+        <th>Parameter</th>
+        <th>Value</th>
+    </tr>
+      
+    <tr>
+        <td>1</td>
+        <td>Service Request ID</td>
+        <td>{{sr.name}}</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>Customer ID</td>
+        <td><a href="/admin/customer_details/{{sr.customer_id}}/{{uname}}">{{sr.customer_id}}</a></td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>Sevice Professional ID</td>
+        <td><a href="/admin/sp_details/{{sr.sp_id}}/{{uname}}">{{sr.sp_id}}</a></td>
+    </tr>
+    <tr>
+        <td>4</td>
+        <td>Date of Request</td>
+        <td>{{sr.date_of_request}}</td>
+    </tr>
+    <tr>
+        <td>5</td>
+        <td>Date of Schedule</td>
+        <td>{{sr.date_of_schedule}}</td>
+    </tr>
+    <tr>
+        <td>6</td>
+        <td>Remarks</td>
+        <td>{{sr.remarks}}</td>
+    </tr>
+    <tr>
+        <td>7</td>
+        <td>Status</td>
+        <td>{{sr.status}}</td>
+    </tr>
+    </table>
+    
+  </div>
+
+{%endblock%}

@@ -1,0 +1,90 @@
+{%extends "admin_layout.html"%} <!--Inherited all nav features-->
+{%block content%}
+
+<div style="text-align: center;">
+    <p style="margin: auto ;"><b>Service Professional Details</b> </p>
+  </div>
+  <div style="width:990px; height:450px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
+                    
+    <table cellspacing="0" cellpadding="1" border="1" width="980" style="margin: auto;">
+    <tr style="color:white;background-color:grey;text-align: center;position: sticky;">
+        <th>Sl. No.</th>
+        <th>Parameter</th>
+        <th>Value</th>
+    </tr>
+      
+    <tr>
+        <td>1</td>
+        <td>Name</td>
+        <td>{{sp.name}}</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>Date of Registration</td>
+        <td>{{sp.date_of_regn}}</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>Service Name</td>
+        <td>{{sp.service_name}}</td>
+    </tr>
+    <tr>
+        <td>4</td>
+        <td>Description</td>
+        <td>{{sp.description}}</td>
+    </tr>
+    <tr>
+        <td>5</td>
+        <td>Proof Document</td>
+        <td><a href="/download/document/{{sp.id}}/{{uname}}">Download</a></td>
+    </tr>
+    <tr>
+        <td>6</td>
+        <td>Base Price</td>
+        <td>{{sp.price}}</td>
+    </tr>
+    <tr>
+        <td>7</td>
+        <td>Agerage Time Taken (in hours)</td>
+        <td>{{sp.avg_time}}</td>
+    </tr>
+    <tr>
+        <td>8</td>
+        <td>Experience Since</td>
+        <td>{{sp.exp_since}}</td>
+    </tr>
+    <tr>
+        <td>9</td>
+        <td>Location</td>
+        <td>{{sp.location}}</td>
+    </tr>
+    <tr>
+        <td>10</td>
+        <td>Pincode</td>
+        <td>{{sp.pin_code}}</td>
+    </tr>
+    <tr>
+        <td>11</td>
+        <td>Contact Number</td>
+        <td>{{sp.contact_number}}</td>
+    </tr>
+    <tr>
+        <td>12</td>
+        <td>Status</td>
+        <td>{{sp.status}}</td>
+    </tr>
+    </table>
+    <br>
+    {%if (sp.status == 'Registered')%}
+    <a href="admin/service_professional/accept/{{sp.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;">Accept</a>
+    <a href="admin/service_professional/reject/{{sp.id}}/{{uname}}" type="button" class="btn btn-danger" style="display: inline;">Reject</a>
+    {%elif (sp.status == 'Active')%}
+    <a href="admin/service_professional/block/{{sp.id}}/{{uname}}" type="button" class="btn btn-danger" style="display: inline;">Block</a>
+    {%elif (sp.status == 'Blocked')%}
+    <a href="admin/service_professional/unblock/{{sp.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;">Unblock</a>
+    {%elif (sp.status == 'Rejected')%}
+    <a href="admin/service_professional/accept/{{sp.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;">Accept</a>
+    {%endif%}
+  </div>
+
+{%endblock%}

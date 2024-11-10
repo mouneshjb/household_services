@@ -1,11 +1,11 @@
 {%extends "admin_layout.html"%} <!--Inherited all nav features-->
 {%block content%}
                 
-<div>
+                <div style="text-align: center; margin: auto;">
                     <div style="text-align: center;">
-                      <p style="margin: auto ;"><b>Current Services</b> </p>
+                    <p style="margin: auto ;"><b>Current Services</b> </p>
                     </div>
-
+                    {% if services %}
                       <div style="width:1000px; height:150px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
                     
                         <table cellspacing="0" cellpadding="1" border="1" width="980" style="margin: auto;">
@@ -16,31 +16,37 @@
                             <th>Average Time Required</th>
                             <th>Action</th>
                         </tr>
-                         {% for service in services%} 
+                         {% for service in services %} 
                         <tr>
                             <td>{{loop.index}}</td>
                             <td>{{service.name}}</td>
                             <td>INR {{service.base_price}}</td>
                             <td>{{service.avg_time_req}} hours</td>
                             <td>
-                              <a href="/service/update/{{service.id}}" type="button" class="btn btn-info">Edit</a>
-                              <a href="/service/delete/{{service.id}}" type="button" class="btn btn-danger">Delete</a>
+                              <a href="/admin/service/update/{{service.id}}/{{uname}}" type="button" class="btn btn-info">Edit</a>
+                              <a href="/admin/service/delete/{{service.id}}/{{uname}}" type="button" class="btn btn-danger">Delete</a>
                             </td>
                         </tr>
-                        {% endfor%}
+                        {% endfor %}
                         </table>  
+                        {% else %}
                         
+                        <h2 style="margin: auto;text-align: center; border: 1px;">No services are added!</h2>
+                    {% endif %}
                       </div>
+                      
+          
                       <div class="center" style="margin: auto; text-align: center;">
-                        <a href="/add/service/" type="button" class="btn btn-primary">+Add New Service</a></div>
+                        <a href="/admin/service/add/{{uname}}" type="button" class="btn btn-primary">+Add New Service</a>
+                      </div>
                       
                       <br>
                   
-                
+              
                     <div style="text-align: center;">
                     <p style="margin: auto ;"><b>Pending Verification of Service Professionals</b> </p>
                     </div>
-
+                    {% if service_professionals %}
                       <div style="width:1000px; height:150px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
                     
                         <table cellspacing="0" cellpadding="1" border="1" width="980" style="margin: auto;">
@@ -54,23 +60,80 @@
                             <th>Document</th>
                             <th>Action</th>
                         </tr>
-                          {%for sp in service_professionals%} 
+                          {% for sp in service_professionals %} 
                         <tr>
-                            <td>{{loop.index}}</td>
+                            <td><a href="/admin/sp_details/{{sp.id}}/{{uname}}">{{loop.index}}</a></td>
                             <td>{{sp.name}}</td>
                             <td>{{sp.service_name}}</td>
                             <td>{{sp.exp_since}}</td>
                             <td>INR {{sp.price}}</td>
                             <td>{{sp.location}}</td>
-                            <td><a href="/download/document/{{sp.id}}">Download</a></td>
+                            <td><a href="/admin/download/document/{{sp.id}}/{{uname}}">Download</a></td>
                             <td>
-                              <a href="/service_professional/acceptance/{{sp.id}}" type="button" class="btn btn-success">Accept</a>
-                              <a href="/service_professional/rejection/{{sp.id}}" type="button" class="btn btn-danger">Reject</a>
+                              {%if sp.status == 'Registered'%}
+                              <a href="/admin/service_professional/accept/{{sp.id}}/{{uname}}" type="button" class="btn btn-success">Accept</a>
+                              <a href="/admin/service_professional/reject/{{sp.id}}/{{uname}}" type="button" class="btn btn-danger">Reject</a>
+                              {%elif sp.status == 'Rejected'%}
+                              <a href="#" type="button" class="btn btn-outline-danger">Rejected</a>
+                              <a href="/admin/service_professional/accept/{{sp.id}}/{{uname}}" type="button" class="btn btn-outline-success">Accept</a>
+                              {%endif%}
                             </td>
                         </tr>
-                        {%endfor%}
+                        {% endfor %}
                         </table>
-</div>
+                        {% else %}
+                      
+                      <div style="margin: auto;text-align: center;border: 1px;"><h2>No pending verification requests!</h2></div>
+                    {% endif %}
+                      </div>
+                    <br>
+                    <div style="text-align: center; margin: auto;">
+                      <p style="margin: auto;"><b>Service Requests</b></p>
+                      </div>
+                      
+                      {% if service_requests %}
+                      <div style="width:1000px; height:150px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
+                    
+                        <table cellspacing="0" cellpadding="1" border="1" width="980" style="margin: auto;">
+                          <tr style="color:white;background-color:grey;text-align: center;position: sticky;">
+                            <th>Sl No.</th>
+                            <th>Customer Name</th>
+                            <th>Service Name</th>
+                            <th>Professional Since</th>
+                            <th>Price</th>
+                            <th>Customer Location</th>
+                            <th>Pincode</th>
+                            <th>Date of request</th>
+                            <th>Date of schedule</th>
+                            <th>Status</th>
+                        </tr>
+                          {% for sr in service_requests %} 
+                        <tr>
+                            <td><a href="/admin/sr_details/{{sr.id}}/{{uname}}">{{loop.index}}</a></td>
+                            <td><a href="/admin/customer_details/{{sr.customer_id}}/{{uname}}">{{sr.customer.name}}</a></td>
+                            <td><a href="/admin/sp_details/{{sr.sp_id}}/{{uname}}">{{sr.service.name}}</a></td>
+                            <td>{{sr.service_professional.name}}</td>
+                            <td>INR {{sr.service_professional.price}}</td>
+                            <td>{{sr.customer.location}}</td>
+                            <td>{{sr.customer.pin_code}}</td>
+                            <td>{{sr.date_of_request}}</td>
+                            <td>{{sr.date_of_schedule}}</td>
+                            <td>{{sr.status}}</td>
+                        </tr>
+                        {% endfor %}
+                        </table>
+                        {% else %}
+                      
+                      <div style="margin: auto;text-align: center;border: 1px;"><h2>No service requests!</h2></div>
+                    {% endif %}
+                  
+                  </div>
+                    </div>  
+                  </div>
+                  
+                    
+                    
+              </div>
 
   {%endblock%}
            

@@ -36,7 +36,7 @@ def login():
             elif usr.status == 'Rejected':
                 return render_template ('login.html', msg = 'Your registration is rejected by the admin. Please register again if needed.')
             else: # if service professional is in active or flagged or blocked stage
-                return redirect(url_for('sp_dashboard', uname = uname))     
+                return redirect(url_for('sp_dashboard', uname = uname, uid = usr.id))     
         else:
             return render_template('login.html', msg='Inavlid credentials entered!')
 
@@ -70,7 +70,7 @@ def signup():
             return render_template('login.html', msg='Signup Successful! Please try log in now.')
         
         
-    return render_template("customer_signup.html", action = 'signup')
+    return render_template("customer_signup.html")
 
 @app.route("/register", methods= ['GET', 'POST'])
 def register():
@@ -204,7 +204,7 @@ def download_sp_doc(sp_id, uname):
     return send_file(BytesIO(sp.doc_data), download_name = sp.doc_name, as_attachment=True)
 
 @app.route("/admin/service_professional/accept/<sp_id>/<uname>", methods= ['GET', 'POST'])
-def sp_accept(acc_rej, sp_id, uname):
+def admin_sp_accept(sp_id, uname):
     sp = Service_professional.query.filter_by(id = sp_id).first()
     sp.status = 'Active'
     db.session.commit()
@@ -213,7 +213,7 @@ def sp_accept(acc_rej, sp_id, uname):
     
 
 @app.route("/admin/service_professional/reject/<sp_id>/<uname>", methods= ['GET', 'POST'])
-def sp_reject(sp_id, uname):
+def admin_sp_reject(sp_id, uname):
     sp = Service_professional.query.filter_by(id = sp_id).first()
     sp.status = 'Rejected'
     db.session.commit()
@@ -335,12 +335,13 @@ def search_by_status(search_by, search_txt):
         return customer
     
 #### CUSTOMER CONTROLS ########
-#### USER DASHBOARD ####
+#### CUSTOMER DASHBOARD ####
 @app.route("/customer/<uid>/<uname>")
 def customer_dashboard(uname, uid):
     services = Service.query.all()
     customer = Customer.query.filter_by(id = uid).first()
-    return render_template('customer_dashboard.html', services=services, uname = uname, uid = uid, customer = customer)
+    service_requests = Service_request.query.filter_by(customer_id = uid).all()
+    return render_template('customer_dashboard.html', services=services, service_requests = service_requests, uname = uname, uid = uid, customer = customer, action  = 'no_show')
 
 @app.route("/customer/profile/update/<uid>/<uname>", methods = ['GET', 'POST'])
 def update_customer_profile(uname, uid):
@@ -363,11 +364,185 @@ def update_customer_profile(uname, uid):
         #### ADMIN DASHBOARD ####
         return redirect(url_for('customer_dashboard', uname=updated.name, uid=uid))
 
-    return render_template('customer_signup.html', uname = uname, uid = uid, customer = customer, action = 'update_profile')
+    return render_template('customer_profile_update.html', uname = uname, uid = uid, customer = customer)
 
+@app.route("/customer/show/<service_id>/service_professionals/<uid>/<uname>")
+def dashboard_services(service_id, uname, uid):
+    service = Service.query.filter_by(id = service_id).first()
+    service_professionals = Service_professional.query.filter_by(service_id = service_id, status = 'Active').all() + Service_professional.query.filter_by(service_id = service_id, status = 'Flagged').all()
+    service_requests = Service_request.query.filter_by(customer_id = uid).all()
+    return render_template('customer_dashboard.html', uname = uname, uid = uid, service = service, service_requests = service_requests, service_professionals = service_professionals, action = 'show')
+
+@app.route("/customer/raise_sr/<service_id>/<sp_id>/<uid>/<uname>", methods = ['GET', 'POST'])
+def raise_sr(service_id, sp_id, uname, uid):
+    service = Service.query.filter_by(id = service_id).first()
+    if request.method == 'POST':
+        customer_id = uid
+        sp_id = sp_id
+        service_id = service.id
+        remarks = request.form.get('remarks')
+        raw_date_of_schedule = request.form.get('date_of_schedule')
+        # Processing datetime
+        date_of_schedule = datetime.strptime(raw_date_of_schedule, "%Y-%m-%dT%H:%M")
+
+        new_sr = Service_request(customer_id = customer_id, sp_id = sp_id, service_id = service_id, remarks = remarks, date_of_schedule = date_of_schedule)
+        db.session.add(new_sr)
+        db.session.commit()
+
+        return redirect(url_for('customer_dashboard', uid = uid, uname = uname))
+
+    return render_template('sr_form.html', service = service, sp_id = sp_id, uname = uname, uid = uid)
+
+@app.route("/customer/close_sr/<sr_id>/<uid>/<uname>", methods = ['GET', 'POST'])
+def close_sr(sr_id, uname, uid):
+    sr = Service_request.query.filter_by(id = sr_id).first()
+    sr.status = 'Closed'
+    db.session.commit()
+    return render_template('service_rating.html', sr = sr, uid = uid, uname = uname, reviewer = 'customer')
+
+@app.route("/customer/rate_sr/<sr_id>/<uid>/<uname>", methods = ['GET', 'POST'])
+def rate_sr(sr_id, uname, uid):
+    sr = Service_request.query.filter_by(id = sr_id).first()
+    if request.method == 'POST':
+        rater_id = sr.customer.id
+        ratee_id = sr.service_professional.id
+        review = request.form.get('review')
+        rating = request.form.get('rating')
+        flag_sp = request.form.get('flag_sp')
+        if flag_sp == 'yes':
+            flag_sp = 1
+        else:
+            flag_sp = 0
+        new_rating = Rating(sr_id = sr_id, rater_id=rater_id,ratee_id = ratee_id, review = review, rating = rating, flag_sp=flag_sp )
+        db.session.add(new_rating)
+        db.session.commit()
+        return redirect(url_for('customer_dashboard', uid = uid, uname = uname))
+
+
+@app.route("/customer/search/<uid>/<uname>",  methods= ['GET', 'POST'])
+def customer_search(uname, uid):
+    if request.method == 'POST':
+        search_by = request.form.get('search_by') or None
+        search_txt = request.form.get('search_txt')
+        if search_by == 'service':
+            if search_txt == '':
+                service_professionals = Service_professional.query.all()
+                # service_requests = Service_request.query.filter_by(customer_id = uid).all()
+                return render_template('customer_search.html', service_professionals = service_professionals, uid = uid, uname=uname)
+            else:
+                service_professionals = Service_professional.query.filter(Service_professional.service_name.ilike(f"%{search_txt}%")).all()
+                # service_requests = Service_request.query.filter(Service_requests.service.name.ilike(f"%{search_txt}%")).all()
+                return render_template('customer_search.html', service_professionals = service_professionals, uid = uid, uname=uname)
+        
+        elif search_by == 'location':
+            if search_txt == '':
+                service_professionals = Service_professional.query.all()
+                service_requests = Service_request.query.filter_by(customer_id = uid).all()
+                return render_template('customer_search.html', service_professionals = service_professionals, service_requests = service_requests, uid = uid, uname=uname)
+            else:
+                service_professionals = Service_professional.query.filter(Service_professional.location.ilike(f"%{search_txt}%")).all()
+                # service_requests = Service_request.query.filter(Service_request.service_professional.location.ilike(f"%{search_txt}%")).all()
+                return render_template('customer_search.html', service_professionals = service_professionals, uid = uid, uname=uname)
+
+    return redirect(url_for('customer_dashboard', uid = uid, uname=uname))
 
 #### SP DASHBOARD ####
-@app.route("/sp/<uname>")
-def sp_dashboard(uname):
+@app.route("/sp/<uid>/<uname>")
+def sp_dashboard(uid, uname):
+    open_service_requests = Service_request.query.filter_by(sp_id = uid, status = 'Requested').all() + Service_request.query.filter_by(sp_id = uid, status = 'Assigned').all()
+    closed_service_requests = Service_request.query.filter_by(sp_id = uid, status = 'Closed').all() + Service_request.query.filter_by(sp_id = uid, status = 'Rejected').all()
+    sp = Service_professional.query.filter_by(id = uid).all()
+    return render_template('sp_dashboard.html', sp = sp, open_service_requests=open_service_requests, 
+                           closed_service_requests=closed_service_requests, uname = uname, uid = uid)
+
+@app.route("/sp/accept/<sr_id>/<uid>/<uname>")
+def sp_accept(sr_id, uid, uname):
+    sr = Service_request.query.filter_by(id = sr_id).first()
+    sr.status = 'Assigned'
+    db.session.commit()
+    return redirect(url_for('sp_dashboard', uid = uid, uname = uname))
+
+@app.route("/sp/reject/<sr_id>/<uid>/<uname>")
+def sp_reject(sr_id, uid, uname):
+    sr = Service_request.query.filter_by(id = sr_id).first()
+    sr.status = 'Rejected'
+    db.session.commit()
+    return redirect(url_for('sp_dashboard', uid = uid, uname = uname))
+
+@app.route("/sp/exit/<sr_id>/<uid>/<uname>")
+def sp_exit(sr_id, uid, uname):
+    sr = Service_request.query.filter_by(id = sr_id).first()
+    sr.sp_exit = 1
+    db.session.commit()
+    return render_template('service_rating.html', sr = sr, uid = uid, uname = uname, reviewer = 'sp')
+
+@app.route("/sp/rate_sr/<sr_id>/<uid>/<uname>", methods = ['GET', 'POST'])
+def sp_rate_sr(sr_id, uname, uid):
+    sr = Service_request.query.filter_by(id = sr_id).first()
+    rating_id = sr.ratings[0].id
+    rating = Rating.query.filter_by(id = rating_id).first()
+    if request.method == 'POST':
     
-    return render_template('sp_dashboard.html', uname = uname)
+        rating.sp_remarks = request.form.get('sp_review')
+        rating.sp_rating = request.form.get('sp_rating')
+        flag_customer = request.form.get('flag_customer')
+        if flag_customer == 'yes':
+            flag_customer = 1
+        else:
+            flag_customer = 0
+        rating.flag_customer = flag_customer
+        db.session.commit()
+        return redirect(url_for('sp_dashboard', uid = uid, uname = uname))
+    
+@app.route("/sp/profile/update/<uid>/<uname>", methods = ['GET', 'POST'])
+def update_sp_profile(uname, uid):
+    sp = Service_professional.query.filter_by(id = uid).first()
+    if request.method == 'POST':
+        updated_name = request.form.get('name') 
+        updated_password = request.form.get('password')
+        updated_location = request.form.get('location') 
+        updated_pin_code = request.form.get('pin_code') 
+        updated_contact_number = request.form.get('contact_number')
+        updated_price = request.form.get('price')
+        updated_avg_time = request.form.get('avg_time')
+        updated_description = request.form.get('description')
+
+        
+        sp.name = updated_name
+        sp.password = updated_password
+        sp.location = updated_location
+        sp.pin_code = updated_pin_code
+        sp.contact_number = updated_contact_number
+        sp.price = updated_price
+        sp.avg_time = updated_avg_time
+        sp.description = updated_description
+
+        db.session.commit()
+        #### ADMIN DASHBOARD ####
+        return redirect(url_for('sp_dashboard', uname=sp.name, uid=uid))
+
+    return render_template('sp_profile_update.html', uname = sp.name, uid = uid, sp = sp)
+
+@app.route("/sp/search/<uid>/<uname>",  methods= ['GET', 'POST'])
+def sp_search(uname, uid):
+    if request.method == 'POST':
+        search_by = request.form.get('search_by') or None
+        search_txt = request.form.get('search_txt')
+        if search_by == 'date':
+            if search_txt == '':
+                service_requests = Service_request.query.filter_by(sp_id = uid).all()
+                return render_template('sp_search.html', service_requests = service_requests, uid = uid, uname=uname)
+            else:
+                service_requests = Service_request.query.filter(Service_request.date_of_schedule.ilike(f"%{search_txt}%"), Service_request.sp_id == uid).all()
+                return render_template('sp_search.html', service_requests = service_requests, uid = uid, uname=uname)
+        
+        elif search_by == 'status':
+            if search_txt == '':
+                service_requests = Service_request.query.filter_by(sp_id = uid).all()
+                return render_template('sp_search.html', service_requests = service_requests, uid = uid, uname=uname)
+            else:
+                service_requests = Service_request.query.filter(Service_request.status.ilike(f"%{search_txt}%"), Service_request.sp_id == uid).all()
+                # service_requests = Service_request.query.filter(Service_request.service_professional.location.ilike(f"%{search_txt}%")).all()
+                return render_template('sp_search.html', service_requests = service_requests, uid = uid, uname=uname)
+
+    return redirect(url_for('customer_dashboard', uid = uid, uname=uname))

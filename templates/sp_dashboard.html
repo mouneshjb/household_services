@@ -1,6 +1,119 @@
 {%extends "sp_layout.html"%} <!--Inherited all nav features-->
 {%block content%}
 
-Main content here
+{%if sp.status != 'Blocked'%}
+<div style="text-align: center;">
+    <p style="margin: auto ;"><b>Open Service Requests</b> </p>
+    </div>
+    {%if open_service_requests %}
+    
+    <div style="width:1200px; height:250px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
+              
+        <table cellspacing="0" cellpadding="1" border="1" width="1180px" style="margin: auto;">
+          <tr style="color:white;background-color:grey;text-align: center;position: sticky;">
+            <th>Sl No.</th>
+                      
+                <th>Service Name</th>
+                <th>Customer Name</th>
+                <th>Price</th>
+                <th>Customer Location</th>
+                <th>Pincode</th>
+                <th>Date of request</th>
+                <th>Date of schedule</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            {% for sr in open_service_requests %} 
+            <tr>
+                <td>{{loop.index}}</td>
+                
+                <td>{{sr.service.name}}</td>
+                <td>{{sr.customer.name}}</td>
+                <td>INR {{sr.service_professional.price}}</td>
+                <td>{{sr.customer.location}}</td>
+                <td>{{sr.customer.pin_code}}</td>
+                <td>{{sr.date_of_request}}</td>
+                <td>{{sr.date_of_schedule}}</td>
+                <td>{{sr.status}}</td>
+            <td>
+              
+              {%if sr.status == 'Requested'%}
 
+              <a href="/sp/accept/{{sr.id}}/{{uid}}/{{uname}}" type="button" class="btn btn-success">Accept</a>
+              <a href="/sp/reject/{{sr.id}}/{{uid}}/{{uname}}" type="button" class="btn btn-outline-danger">Reject</a>
+
+              {%elif sr.status == 'Assigned'%}
+              <a href="#" type="button" class="btn btn-success">Accepted</a>
+              {%endif%}
+            </td>
+        </tr>
+        {% endfor %}
+        </table>
+        
+    </div>
+    {% else %}
+    <div style="margin: auto;text-align: center;border: 1px;"><h2>No open requests found!</h2></div>
+    {%endif%}
+
+    {%else%}
+    <div style="text-align: center;">
+      <h2 style="margin: auto ;">Sorry, you are blocked! Please contact admin.  </h2>
+      </div>
+
+{%endif%}
+
+<div style="text-align: center;">
+    <p style="margin: auto ;"><b>Closed Service Requests</b> </p>
+    </div>
+    {% if closed_service_requests %}
+                <div style="width:1200px; height:250px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
+              
+                  <table cellspacing="0" cellpadding="1" border="1" width="1180px" style="margin: auto;">
+                    <tr style="color:white;background-color:grey;text-align: center;position: sticky;">
+                      <th>Sl No.</th>
+                      
+                      <th>Service Name</th>
+                      <th>Customer Name</th>
+                      <th>Price</th>
+                      <th>Customer Location</th>
+                      <th>Pincode</th>
+                      <th>Date of request</th>
+                      <th>Date of schedule</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                  </tr>
+                    {% for sr in closed_service_requests %} 
+                  <tr>
+                      <td>{{loop.index}}</td>
+                      
+                      <td>{{sr.service.name}}</td>
+                      <td>{{sr.customer.name}}</td>
+                      <td>INR {{sr.service_professional.price}}</td>
+                      <td>{{sr.customer.location}}</td>
+                      <td>{{sr.customer.pin_code}}</td>
+                      <td>{{sr.date_of_request}}</td>
+                      <td>{{sr.date_of_schedule}}</td>
+                      <td>{{sr.status}}</td>
+                      <td>
+                        {%if sr.status == 'Rejected'%}
+                        <a href="#" type="button" class="btn btn-secondary" style="width: 100px;">Rejected</a>
+                        
+                        {%elif (sr.status == 'Closed') and (sr.sp_exit == 0)%}
+        
+                        <a href="#" type="button" class="btn btn-outline-primary">Closed</a>
+                        <a href="/sp/exit/{{sr.id}}/{{uid}}/{{uname}}" type="button" class="btn btn-success">Exit?</a>
+                        {%elif (sr.status == 'Closed') and (sr.sp_exit == 1)%}
+                        <a href="#" type="button" class="btn btn-primary">Closed</a>
+                        <a href="#" type="button" class="btn btn-success">Exited</a>
+                        {%endif%}
+                      </td>
+                  </tr>
+                  {% endfor %}
+                  </table>
+                  {% else %}
+                
+                <div style="margin: auto;text-align: center;border: 1px;"><h2>No closed requests found!</h2></div>
+              {% endif %}
+              
+                </div>
 {%endblock%}

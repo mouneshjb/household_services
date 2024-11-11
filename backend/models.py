@@ -16,6 +16,7 @@ class Customer(db.Model):
     contact_number = db.Column(db.String, nullable = False)
     location = db.Column(db.String, nullable = False)
     pin_code = db.Column(db.Integer, nullable = False)
+    avg_ratings = db.Column(db.Float)
     status = db.Column(db.String, default = 'Active') # Active , Flagged ,  Blocked
     #Defining backreference to enable parent to have access to all the children 
     sr = db.relationship('Service_request', cascade = 'all, delete', backref = 'customer', lazy = True) 
@@ -44,6 +45,7 @@ class Service_professional(db.Model):
     pin_code = db.Column(db.Integer, nullable = False)
     contact_number = db.Column(db.String, nullable = False)
     status = db.Column(db.String, default = 'Registered') # Registered - 0, Active - 1, Flagged - 2, Blocked - 3, Rejected - 4
+    avg_ratings = db.Column(db.Float)
     # avg_rating = db.Column(db.Integer, default = 0)
     #Defining backreference to enable parent to have access to all the children 
     sr = db.relationship('Service_request', backref = 'service_professional', lazy = True)
@@ -59,8 +61,8 @@ class Service_request(db.Model):
     service_id=db.Column(db.Integer,db.ForeignKey('service.id'), nullable = False)
     remarks = db.Column(db.String, nullable = False)
     date_of_schedule = db.Column(db.DateTime) # NEED TO CONFIRM on type
-    date_of_completion = db.Column(db.DateTime, default = datetime.now)
-    status = db.Column(db.String, default = 'Requested') # Requested - 0, Assigned - 1, Closed - 2
+    date_of_completion = db.Column(db.DateTime)
+    status = db.Column(db.String, default = 'Requested') # Requested , Assigned, Closed, Rejected
     sp_exit = db.Column(db.Integer, default = 0) # Not-exited - 0, Exited - 1
     ratings = db.relationship('Rating', backref = 'service_request', lazy = True)
 
@@ -72,10 +74,10 @@ class Rating(db.Model):
     rater_id = db.Column(db.Integer,db.ForeignKey('customer.id'), nullable = False)
     ratee_id = db.Column(db.Integer,db.ForeignKey('service_professional.id'), nullable = False)
     review = db.Column(db.String)
-    rating = db.Column(db.Integer)
+    rating = db.Column(db.Float, nullable = False)
     flag_sp = db.Column(db.Integer, default = 0) # Flagged - 1, not flagged - 0
     date_of_rating = db.Column(db.DateTime, default = datetime.now) # NEED TO CONFIRM on type
-    sp_rating = db.Column(db.Integer)
+    sp_rating = db.Column(db.Float)
     sp_remarks = db.Column(db.String)
     flag_customer = db.Column(db.Integer, default = 0) # Flagged - 1, not flagged - 0
 

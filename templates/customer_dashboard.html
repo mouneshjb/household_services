@@ -1,7 +1,9 @@
 {%extends "customer_layout.html"%} <!--Inherited all nav features-->
 {%block content%}
 
-{%if customer.status != 'Blocked'%}
+{%if action == 'no_show'%}
+  {%if customer.status != 'Blocked'%}
+  <div>
 <div style="text-align: center;">
   <p style="margin: auto ;"><b>Which service are you looking for?</b> </p>
   </div>
@@ -9,10 +11,10 @@
           {%for service in services%}
           <div class="col">
               <div class="card h-100" style="height: 200px;">
-                <a href="/customer/{{service.id}}/service_professionals/{{uid}}/{{uname}}"><img src="..." class="card-img-top" alt="Image of {{service.name}}">
+                <a href="/customer/show/{{service.id}}/service_professionals/{{uid}}/{{uname}}">
                 <div class="card-body">
                   <h5 class="card-title">{{service.name}}</h5></a>
-                  <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                  <p class="card-text">Variety of good {{service.name}} services at affordable prices. Click to know more.</p>
                 </div>
               </div>
         </div>
@@ -23,26 +25,85 @@
       <h2 style="margin: auto ;">Sorry, you are blocked! Please contact admin.  </h2>
       </div>
       {%endif%}
+    {%else%}
+    <div>
+    <div style="text-align: center;">
+      <p style="margin: auto ;"><b>Best {{service.name}} packages</b> </p>
+      </div>
+      {% if service_professionals %}
+       
+                  <div style="width:1200px; height:250px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
+                
+                    <table cellspacing="0" cellpadding="1" border="1" width="1180" style="margin: auto;">
+                      <tr style="color:white;background-color:grey;text-align: center;position: sticky;">
+                        <th>Sl No.</th>
+                        <th>Professional Name</th>
+                        <th>Service Name</th>
+                        <th>Description</th>
+                        <th>Professional Since</th>
+                        <th>Price</th>
+                        <th>Average Time</th>
+                        <th>Location</th>
+                        <th>Pincode</th>
+                        <th>Contact Number</th>
+                        <th>Ratings</th>
+                
+                        <th>Action</th>
+                    </tr>
+                      {% for sp in service_professionals %} 
+                      
+                    <tr>
+                        <td>{{loop.index}}</td>
+                        <td>{{sp.name}}</td>
+                        <td>{{sp.service.name}}</td>
+                        <td>{{sp.description}}</td>
+                        <td>{{sp.exp_since}}</td>
+                        <td>INR {{sp.price}}</td>
+                        <td>{{sp.avg_time}} Hours</td>
+                        <td>{{sp.location}}</td>
+                        <td>{{sp.pin_code}}</td>
+                        <td>{{sp.contact_number}}</td>
+                        <td>{{sp.avg_ratings}}</td>
+                        
+                        <td>
+                        
+                          <a href="/customer/raise_sr/{{sp.service_id}}/{{sp.id}}/{{uid}}/{{uname}}" type="button" class="btn btn-primary">Book</a>
+                    
+                        </td>
+                    </tr>
+                    
+                    {% endfor %}
+                    </table>
+                    
+                  </div>
+                  {% else %}
+                  <div style="margin: auto;text-align: center;border: 1px;"><h2>No service professional found!</h2></div>
+                  
+                {%endif%}
+              
+              
+        {%endif%}
+      </div>    
         <div style="text-align: center;">
           <p style="margin: auto ;"><b>Service Request History</b> </p>
           </div>
           {% if service_requests %}
       
-                      <div style="width:1000px; height:150px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
+                      <div style="width:1200px; height:250px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
                     
-                        <table cellspacing="0" cellpadding="1" border="1" width="980" style="margin: auto;">
+                        <table cellspacing="0" cellpadding="1" border="1" width="1180px" style="margin: auto;">
                           <tr style="color:white;background-color:grey;text-align: center;position: sticky;">
                             <th>Sl No.</th>
-                            <th>Customer Name</th>
+                            
                             <th>Service Name</th>
-                            <th>Professional Since</th>
+                            <th>Professional Name</th>
                             <th>Price</th>
-                            <th>Customer Location</th>
+                            <th>Professional Location</th>
                             <th>Pincode</th>
                             <th>Date of request</th>
                             <th>Date of schedule</th>
                             <th>Status</th>
-                            <th>Action</th>
+                            <th style="width: 15%;">Action</th>
                         </tr>
                           {% for sr in service_requests %} 
                         <tr>
@@ -51,19 +112,26 @@
                             <td>{{sr.service.name}}</td>
                             <td>{{sr.service_professional.name}}</td>
                             <td>INR {{sr.service_professional.price}}</td>
-                            <td>{{sr.customer.location}}</td>
-                            <td>{{sr.customer.pin_code}}</td>
+                            <td>{{sr.service_professional.location}}</td>
+                            <td>{{sr.service_professional.pin_code}}</td>
                             <td>{{sr.date_of_request}}</td>
                             <td>{{sr.date_of_schedule}}</td>
                             <td>{{sr.status}}</td>
                             <td>
                               {%if sr.status == 'Requested'%}
-                              <a href="#" type="button" class="btn btn-outline-secondary">No Action</a>
+                              <a href="#" type="button" class="btn btn-outline-secondary" style="width: 100px;">No Action</a>
                               
                               {%elif sr.status == 'Assigned'%}
               
                               <a href="#" type="button" class="btn btn-outline-primary">Assigned</a>
-                              <a href="/customer/update_sr/{{sr.id}}/{{uid}}/{{uname}}" type="button" class="btn btn-success">Close?</a>
+                              <a href="/customer/close_sr/{{sr.id}}/{{uid}}/{{uname}}" type="button" class="btn btn-success">Close?</a>
+
+                              {%elif sr.status == 'Closed'%}
+              
+                              <a href="#" type="button" class="btn btn-outline-success" style="width: 100px;">Closed</a>
+                              {%elif sr.status == 'Rejected'%}
+              
+                              <a href="#" type="button" class="btn btn-outline-danger" style="width: 100px;">Rejected</a>
                               {%endif%}
                             </td>
                         </tr>
@@ -74,5 +142,5 @@
                       <div style="margin: auto;text-align: center;border: 1px;"><h2>No service requests!</h2></div>
                     {% endif %}
                     
-
+                      </div>
 {%endblock%}

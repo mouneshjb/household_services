@@ -1,0 +1,61 @@
+{%extends "customer_layout.html"%} <!--Inherited all nav features-->
+{%block content%}
+
+
+                {%if service_professionals%}
+                <div style="text-align: center; margin: auto;">
+                    <p style="margin: auto;"><b>Result for the search</b></p>
+                    </div>
+                      <div style="width:1200px; height:500px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
+                    
+                        <table cellspacing="0" cellpadding="1" border="1" width="1180" style="margin: auto;">
+                            <tr style="color:white;background-color:grey;text-align: center;position: sticky;">
+                              <th>Sl No.</th>
+                              <th>Professional Name</th>
+                              <th>Service Name</th>
+                              <th>Description</th>
+                              <th>Professional Since</th>
+                              <th>Price</th>
+                              <th>Average Time</th>
+                              <th>Location</th>
+                              <th>Pincode</th>
+                              <th>Contact Number</th>
+                              <th>Ratings</th>
+                      
+                              <th>Action</th>
+                          </tr>
+                            {% for sp in service_professionals %} 
+                            
+                          <tr>
+                              <td>{{loop.index}}</td>
+                              <td>{{sp.name}}</td>
+                              <td>{{sp.service.name}}</td>
+                              <td>{{sp.description}}</td>
+                              <td>{{sp.exp_since}}</td>
+                              <td>INR {{sp.price}}</td>
+                              <td>{{sp.avg_time}} Hours</td>
+                              <td>{{sp.location}}</td>
+                              <td>{{sp.pin_code}}</td>
+                              <td>{{sp.contact_number}}</td>
+                              <td>{{sp.avg_ratings}}</td>
+                              
+                              <td>
+                              
+                                <a href="/customer/raise_sr/{{sp.service_id}}/{{sp.id}}/{{uid}}/{{uname}}" type="button" class="btn btn-primary">Book</a>
+                          
+                              </td>
+                          </tr>
+                          
+                          {% endfor %}
+                          </table>  
+                        {%else%}
+                      <br>
+                      <div style="margin: auto;text-align: center;border: 1px;"><h2>No services found!</h2></div>
+                    {%endif%}
+                      </div>
+
+    
+                
+        
+
+{%endblock%}

@@ -1,0 +1,36 @@
+{%extends "customer_layout.html"%} <!--Inherited all nav features-->
+{%block content%}
+
+<br>
+
+<div style="text-align: center;margin: auto;"><h3>Service Review Form for {{sr.service.name}}</h3></div>
+                <br><br>
+                <form action="/customer/rate_sr/{{sr.id}}/{{uid}}/{{uname}}" method="POST">
+                <div class="input_form" style="margin: auto; margin-top: 10px; height: 320px;">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Review</label>
+                        <input type="text" class="form-control" name="review" id="review" placeholder="How was the service?">
+                    </div>
+                    <div class="mb-3">
+                        <label for="rating" class="form-label">Rating (out of 10)</label>
+                        <input type="text" class="form-control" name="rating" id="rating" placeholder="How do you rate out of 10?">
+                    </div>
+                    <div class="mb-3">
+                        <label for="flag_sp" class="form-label">Flag the professional?</label><br>
+                        <select name="flag_sp" class="form-control" required>
+                            <option value="">select</option>
+                            
+                            <option value="no">No</option>
+                            <option value="yes">Yes</option>
+                            
+                        </select>
+                    
+                    <div class="mb-3" style="text-align: center; margin-top: 10px;">
+                        <button type="submit" class="btn btn-primary" style="text-align: center; margin: auto;">Submit</button>
+                    </div>
+                </div>
+                </form>
+                </div>
+
+               
+{%endblock%}

@@ -51,15 +51,18 @@
     </table>
     <br>
     {%if (customer.status == 'Active')%}
-    <a href="/admin/customer/flag/{{customer.id}}/{{uname}}" type="button" class="btn btn-warning" style="display: inline;">Flag</a>
-    <a href="/admin/customer/block/{{customer.id}}/{{uname}}" type="button" class="btn btn-danger" style="display: inline;">Block</a>
+    <a href="/admin/customer/flag/{{customer.id}}/{{uname}}" type="button" class="btn btn-warning" style="display: inline;margin-right: 5px;">Flag</a>
+    <a href="/admin/customer/block/{{customer.id}}/{{uname}}" type="button" class="btn btn-danger" style="display: inline; margin-left: 5px;">Block</a>
     {%elif (customer.status == 'Flagged')%}
-    <a href="/admin/customer/block/{{customer.id}}/{{uname}}" type="button" class="btn btn-danger" style="display: inline;">Block</a>
-    <a href="/admin/customer/active/{{customer.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;">Unflag</a>
+    <a href="/admin/customer/block/{{customer.id}}/{{uname}}" type="button" class="btn btn-danger" style="display: inline; margin-right: 5px;">Block</a>
+    <a href="/admin/customer/active/{{customer.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline; margin-left: 5px;">Unflag</a>
     {%elif (customer.status == 'Blocked')%}
-    <a href="/admin/customer/active/{{customer.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;">Unblock</a>
-    <a href="/admin/customer/flag/{{customer.id}}/{{uname}}" type="button" class="btn btn-warning" style="display: inline;">Flag</a>
+    <a href="/admin/customer/active/{{customer.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline; margin-right: 5px;">Unblock</a>
+    <a href="/admin/customer/flag/{{customer.id}}/{{uname}}" type="button" class="btn btn-warning" style="display: inline; margin-left: 5px;">Flag</a>
     {%endif%}
-  </div>
+    <br>
+    
+    <a href="/admin/{{uname}}" type="button" class="btn btn-info" style="margin-top: 10px;">Go Back</a>  
+</div>
 
 {%endblock%}

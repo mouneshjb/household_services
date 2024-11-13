@@ -3,7 +3,11 @@ from flask import Flask, render_template, redirect, request, send_file, url_for
 from flask import current_app as app
 from .models import *
 from io import BytesIO
-from sqlalchemy import or_
+from sqlalchemy import func
+import matplotlib
+matplotlib.use('Agg')
+from matplotlib import pyplot as plt
+
 
 @app.route("/")
 def home():
@@ -193,6 +197,30 @@ def customer_details(customer_id, uname):
     customer = Customer.query.filter_by(id = customer_id).first()
     return render_template('customer_details.html',customer=customer, uname=uname)
 
+@app.route("/admin/customer/active/<customer_id>/<uname>", methods= ['GET', 'POST'])
+def admin_customer_activate(customer_id, uname):
+    customer = Customer.query.filter_by(id = customer_id).first()
+    customer.status = 'Active'
+    db.session.commit()
+    #### ADMIN DASHBOARD ####
+    return redirect(url_for('admin_dashboard', uname=uname))
+
+@app.route("/admin/customer/flag/<customer_id>/<uname>", methods= ['GET', 'POST'])
+def admin_customer_flag(customer_id, uname):
+    customer = Customer.query.filter_by(id = customer_id).first()
+    customer.status = 'Flagged'
+    db.session.commit()
+    #### ADMIN DASHBOARD ####
+    return redirect(url_for('admin_dashboard', uname=uname))
+
+@app.route("/admin/customer/block/<customer_id>/<uname>", methods= ['GET', 'POST'])
+def admin_customer_block(customer_id, uname):
+    customer = Customer.query.filter_by(id = customer_id).first()
+    customer.status = 'Blocked'
+    db.session.commit()
+    #### ADMIN DASHBOARD ####
+    return redirect(url_for('admin_dashboard', uname=uname))
+
 @app.route("/admin/sr_details/<sr_id>/<uname>")
 def sr_details(sr_id, uname):
     sr = Service_request.query.filter_by(id = sr_id).first()
@@ -219,6 +247,16 @@ def admin_sp_reject(sp_id, uname):
     db.session.commit()
     #### ADMIN DASHBOARD ####
     return redirect(url_for('admin_dashboard', uname=uname))
+
+@app.route("/admin/service_professional/block/<sp_id>/<uname>", methods= ['GET', 'POST'])
+def admin_sp_block(sp_id, uname):
+    sp = Service_professional.query.filter_by(id = sp_id).first()
+    sp.status = 'Blocked'
+    db.session.commit()
+    #### ADMIN DASHBOARD ####
+    return redirect(url_for('admin_dashboard', uname=uname))
+
+
 
 @app.route("/admin/search/<uname>",  methods= ['GET', 'POST'])
 def admin_search(uname):
@@ -283,7 +321,68 @@ def admin_search(uname):
     
     return redirect(url_for('admin_dashboard', uname=uname))
 
+### ADMIN SUMMARY
+@app.route("/admin/summary/<uname>",  methods= ['GET', 'POST'])
+def admin_summary(uname):
+    services = Service.query.all()
+    
+    service_names = []
+    sr_count = []
+    empty_s = []
+    avg_service_rating = []
+    for service in services:
+        service_name = service.name
+        service_id = service.id
+        srs = Service_request.query.filter_by(service_id=service_id).all()
+        
+        if len(srs) != 0:
+            count = len(srs)
+            service_names.append(service_name)
+            sr_count.append(count)
+            sps = Service_professional.query.filter_by(service_id=service_id).all()
+            c = 0
+            sum_rating = 0
+            for sp in sps:
+                if sp.avg_ratings != None:
+                    sum_rating += sp.avg_ratings
+                    c+=1 
+                    if c !=0:
+                        avg_sp_rating = round((sum_rating/c),2)
+                        avg_service_rating.append(avg_sp_rating)
+        else:
+            empty_s.append(service_name)
+    
+    # plotting pie chart
+    
+    plt.clf()
+    plt.pie(sr_count, labels = service_names, shadow=True, autopct='%1.1f%%')
+    plt.title("Service Requests Summary")
+    plt.legend(title = 'Service Name')
+    plt.savefig('./static/images/admin_summary1.jpeg')
+    
+    # x = service_names
+    # y = sr_count
+    # plt.bar(x, y, color='blue', width=0.5)
+    # plt.title("Service Requests Summary")
+    # plt.xlabel("Service Names")
+    # plt.ylabel("Service Requests Count")
+    # plt.savefig('./static/images/admin_summary1.jpeg')
+    # plt.clf()
 
+
+#### Main thread error - the plot jus being developed from the system and not from the app, it is breeaking the context that the flask
+# has set in, it is generating from the server machine not from  the client side
+    # plotting histogram
+    x = service_names
+    y = avg_service_rating
+    plt.clf()
+    plt.bar(x, y, color='blue', width=0.5)
+    plt.title("Average Ratings of Service Professionals")
+    plt.xlabel("Services")
+    plt.ylabel("Average Ratings")
+    plt.savefig('static/images/admin_summary2.jpeg')
+    
+    return render_template('admin_summary.html', empty_s = empty_s, uname = uname)
 
 # Other supported functions
 def search_by_name(search_by, search_txt):
@@ -388,6 +487,7 @@ def raise_sr(service_id, sp_id, uname, uid):
         new_sr = Service_request(customer_id = customer_id, sp_id = sp_id, service_id = service_id, remarks = remarks, date_of_schedule = date_of_schedule)
         db.session.add(new_sr)
         db.session.commit()
+        
 
         return redirect(url_for('customer_dashboard', uid = uid, uname = uname))
 
@@ -398,11 +498,12 @@ def close_sr(sr_id, uname, uid):
     sr = Service_request.query.filter_by(id = sr_id).first()
     sr.status = 'Closed'
     db.session.commit()
-    return render_template('service_rating.html', sr = sr, uid = uid, uname = uname, reviewer = 'customer')
+    return render_template('customer_review_form.html', sr = sr, uid = uid, uname = uname)
 
 @app.route("/customer/rate_sr/<sr_id>/<uid>/<uname>", methods = ['GET', 'POST'])
 def rate_sr(sr_id, uname, uid):
     sr = Service_request.query.filter_by(id = sr_id).first()
+    sp = Service_professional.query.filter_by(id = sr.sp_id).first()
     if request.method == 'POST':
         rater_id = sr.customer.id
         ratee_id = sr.service_professional.id
@@ -411,10 +512,25 @@ def rate_sr(sr_id, uname, uid):
         flag_sp = request.form.get('flag_sp')
         if flag_sp == 'yes':
             flag_sp = 1
+            sp.status = 'Flagged'
+            db.session.commit()
         else:
             flag_sp = 0
-        new_rating = Rating(sr_id = sr_id, rater_id=rater_id,ratee_id = ratee_id, review = review, rating = rating, flag_sp=flag_sp )
+        new_rating = Rating(sr_id = sr_id, rater_id=rater_id,ratee_id = ratee_id, review = review, rating = rating, flag_sp=flag_sp)
         db.session.add(new_rating)
+        db.session.commit()
+
+        # Updating avg_rating for customer
+        # sp_rating = Rating.query.get([func.round(func.avg(rating.rating), 2)])
+        sp_rating_list = list(Rating.query.filter_by(ratee_id = sp.id).all())
+        sum_rating = 0
+        c = 0
+        for rate in sp_rating_list:
+            if rate != None:
+                sum_rating += rate.rating
+                c+=1 
+        avg_sp_rating = round((sum_rating/c),2)
+        sp.avg_ratings = avg_sp_rating
         db.session.commit()
         return redirect(url_for('customer_dashboard', uid = uid, uname = uname))
 
@@ -446,12 +562,64 @@ def customer_search(uname, uid):
 
     return redirect(url_for('customer_dashboard', uid = uid, uname=uname))
 
+### CUSTOMER SUMMARY
+@app.route("/customer/summary/<uid>/<uname>",  methods= ['GET', 'POST'])
+def customer_summary(uid, uname):
+    
+    customer = Customer.query.filter_by(id=uid).first()
+    empty_s = ['Requested','Assigned', 'Closed', 'Rejected']
+    
+
+    sr_list = list(Service_request.query.filter(Service_request.customer_id==uid).all())
+    d = {}
+    for sr in sr_list:
+        d[sr.status] = 0
+    for sr in sr_list:
+        d[sr.status]+=1
+    
+    for key in d:
+        if d[key] == 0:
+            d.pop(key)
+        else:
+            empty_s.remove(key)
+    count = list(d.values())
+    status_li = list(d.keys())
+
+    # plotting pie chart
+    if d != {}:
+        plt.clf()
+        plt.pie(count, labels = status_li, shadow=True, autopct='%1.1f%%')
+        plt.title("Service Requests Status Summary")
+        plt.legend(title = 'Status')
+        plt.savefig('./static/images/customer_summary1.jpeg')
+    
+
+
+#### Main thread error - the plot jus being developed from the system and not from the app, it is breeaking the context that the flask
+# has set in, it is generating from the server machine not from  the client side
+    # plotting histogram
+    if customer.avg_ratings != None:
+        x = customer.name
+        y = customer.avg_ratings
+        plt.clf()
+        plt.bar(x, y, color='blue', width=0.5)
+        plt.title(f"Average Ratings for {customer.name}")
+        plt.xlabel("Customer: {customer.name}")
+        plt.ylabel("Average Ratings")
+        plt.savefig('static/images/customer_summary2.jpeg')
+        
+    return render_template('customer_summary.html', uname = uname, empty_s = empty_s, uid = uid)
+
+
+
+
+
 #### SP DASHBOARD ####
 @app.route("/sp/<uid>/<uname>")
 def sp_dashboard(uid, uname):
     open_service_requests = Service_request.query.filter_by(sp_id = uid, status = 'Requested').all() + Service_request.query.filter_by(sp_id = uid, status = 'Assigned').all()
     closed_service_requests = Service_request.query.filter_by(sp_id = uid, status = 'Closed').all() + Service_request.query.filter_by(sp_id = uid, status = 'Rejected').all()
-    sp = Service_professional.query.filter_by(id = uid).all()
+    sp = Service_professional.query.filter_by(id = uid).first()
     return render_template('sp_dashboard.html', sp = sp, open_service_requests=open_service_requests, 
                            closed_service_requests=closed_service_requests, uname = uname, uid = uid)
 
@@ -474,26 +642,40 @@ def sp_exit(sr_id, uid, uname):
     sr = Service_request.query.filter_by(id = sr_id).first()
     sr.sp_exit = 1
     db.session.commit()
-    return render_template('service_rating.html', sr = sr, uid = uid, uname = uname, reviewer = 'sp')
+    return render_template('sp_review_form.html', sr = sr, uid = uid, uname = uname)
 
 @app.route("/sp/rate_sr/<sr_id>/<uid>/<uname>", methods = ['GET', 'POST'])
 def sp_rate_sr(sr_id, uname, uid):
     sr = Service_request.query.filter_by(id = sr_id).first()
-    rating_id = sr.ratings[0].id
-    rating = Rating.query.filter_by(id = rating_id).first()
     if request.method == 'POST':
-    
-        rating.sp_remarks = request.form.get('sp_review')
-        rating.sp_rating = request.form.get('sp_rating')
+        rating_obj = Rating.query.filter(Rating.sr_id == sr_id).first()
+        customer = Customer.query.filter(Customer.id == sr.customer_id).first()
+        rating_obj.sp_remarks = request.form.get('sp_review')
+        rating_obj.sp_rating = request.form.get('sp_rating')
         flag_customer = request.form.get('flag_customer')
         if flag_customer == 'yes':
             flag_customer = 1
+            customer.status = 'Flagged'
+            db.session.commit()
         else:
             flag_customer = 0
-        rating.flag_customer = flag_customer
+        rating_obj.flag_customer = flag_customer
+        db.session.commit()
+        
+        # Updating avg_rating for customer
+        cust_rating_list = list(Rating.query.filter_by(rater_id = customer.id).all())
+        sum_rating = 0
+        c = 0
+        for rate in cust_rating_list:
+            if rate != None:
+                sum_rating += rate.sp_rating
+                c+=1 
+        avg_cust_rating = round((sum_rating/c),2)
+        customer.avg_ratings = avg_cust_rating
         db.session.commit()
         return redirect(url_for('sp_dashboard', uid = uid, uname = uname))
-    
+    return render_template('service_rating.html', sr = sr, uid = uid, uname = uname, reviewer = 'sp')
+
 @app.route("/sp/profile/update/<uid>/<uname>", methods = ['GET', 'POST'])
 def update_sp_profile(uname, uid):
     sp = Service_professional.query.filter_by(id = uid).first()
@@ -546,3 +728,68 @@ def sp_search(uname, uid):
                 return render_template('sp_search.html', service_requests = service_requests, uid = uid, uname=uname)
 
     return redirect(url_for('customer_dashboard', uid = uid, uname=uname))
+
+### SP SUMMARY
+@app.route("/sp/summary/<uid>/<uname>",  methods= ['GET', 'POST'])
+def sp_summary(uid, uname):
+    
+    sp = Service_professional.query.filter_by(id=uid).first()
+    empty_s = ['Requested','Assigned', 'Closed', 'Rejected']
+    # empty_s = []
+    # valid_status = valid_count = []
+
+    # for status in sr_status:
+    #     sr_list = list(Service_request.query.filter(Service_request.sp_id==uid, Service_request.status == status).all())
+    #     if len(sr_list) != 0:
+            
+    #         valid_status.append(status)
+    #         valid_count.append(float(len(sr_list)))
+    #     else:
+    #         empty_s.append(status)
+    sr_list = list(Service_request.query.filter(Service_request.sp_id==uid).all())
+    d = {}
+    for sr in sr_list:
+        d[sr.status] = 0
+    for sr in sr_list:
+        d[sr.status]+=1
+    
+    for key in d:
+        if d[key] == 0:
+            d.pop(key)
+        else:
+            empty_s.remove(key)
+    count = list(d.values())
+    status_li = list(d.keys())
+
+    # plotting pie chart
+    if status_li != []:
+        plt.clf()
+        plt.pie(count, labels = status_li, shadow=True, autopct='%1.1f%%')
+        plt.title("Service Requests Status Summary")
+        plt.legend(title = 'Status')
+        plt.savefig('./static/images/sp_summary1.jpeg')
+    
+    # x = service_names
+    # y = sr_count
+    # plt.bar(x, y, color='blue', width=0.5)
+    # plt.title("Service Requests Summary")
+    # plt.xlabel("Service Names")
+    # plt.ylabel("Service Requests Count")
+    # plt.savefig('./static/images/admin_summary1.jpeg')
+    # plt.clf()
+
+
+#### Main thread error - the plot jus being developed from the system and not from the app, it is breeaking the context that the flask
+# has set in, it is generating from the server machine not from  the client side
+    # plotting histogram
+    if sp.avg_ratings != None:
+        x = sp.name
+        y = sp.avg_ratings
+        plt.clf()
+        plt.bar(x, y, color='blue', width=0.5)
+        plt.title(f"Average Ratings for {sp.name}")
+        plt.xlabel("Service Professional")
+        plt.ylabel("Average Ratings")
+        plt.savefig('static/images/sp_summary2.jpeg')
+    
+    return render_template('sp_summary.html', uname = uname, empty_s = empty_s, uid = uid)

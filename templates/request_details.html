@@ -16,17 +16,17 @@
     <tr>
         <td>1</td>
         <td>Service Request ID</td>
-        <td>{{sr.name}}</td>
+        <td>{{sr.id}}</td>
     </tr>
     <tr>
         <td>2</td>
         <td>Customer ID</td>
-        <td><a href="/admin/customer_details/{{sr.customer_id}}/{{uname}}">{{sr.customer_id}}</a></td>
+        <td><a href="/admin/customer_details/{{sr.customer_id}}/{{uname}}">{{sr.customer.name}}</a></td>
     </tr>
     <tr>
         <td>3</td>
         <td>Sevice Professional ID</td>
-        <td><a href="/admin/sp_details/{{sr.sp_id}}/{{uname}}">{{sr.sp_id}}</a></td>
+        <td><a href="/admin/sp_details/{{sr.sp_id}}/{{uname}}">{{sr.service_professional.name}}</a></td>
     </tr>
     <tr>
         <td>4</td>
@@ -49,6 +49,9 @@
         <td>{{sr.status}}</td>
     </tr>
     </table>
+    <br>
+
+    <a href="/admin/{{uname}}" type="button" class="btn btn-info">Go Back</a>
     
   </div>
 

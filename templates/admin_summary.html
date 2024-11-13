@@ -1,0 +1,37 @@
+{%extends "admin_layout.html"%} <!--Inherited all nav features-->
+{%block content%}
+    <div>
+        <div>
+        <h2 style="margin: auto ; text-align: center;">Admin Summary </h2>
+        </div> 
+        <br><br>
+        <div style="text-align: center;margin: auto;">
+        <div style="display: inline-block; border: 1px solid black;margin-right: 50px;">
+            <p style="margin-top: 5px;"><b>Service Requests Summary</b> </p>
+            
+            <img src= '/static/images/admin_summary1.jpeg' alt="Service Requests Summary" width="400", height="300" style="margin-left: 20px;">
+            </div>
+            <div style="display: inline-block;border: 1px solid black;margin-left: 50px;">
+                <p style="margin-top: 5px;"><b>Average Ratings of Service Professionals</b> </p>
+                
+                <img src= '/static/images/admin_summary2.jpeg' alt="Average Ratings Summary" width="400", height="300" style="margin-right: 20px;">
+                </div>
+            </div>
+            <br>
+        <div style="text-align: left; margin-left: 20px;">
+            {%if empty_s%}
+            <p> Services having no service requests are:</p>
+            <ul>
+            {%for s in empty_s%}
+            
+            <li><b> {{s}} </b></li>
+            
+            {%endfor%}
+        </ul>
+            {%endif%}
+        </div>
+    </div>
+                
+
+  {%endblock%}
+           

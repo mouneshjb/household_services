@@ -66,14 +66,17 @@
                             <td>{{sp.status}}</td>
                             <td>
                                 {%if (sp.status == 'Registered')%}
-                                <a href="/service_professional/accept/{{sp.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;width: 75px;">Accept</a>
-                                <a href="/service_professional/reject/{{sp.id}}/{{uname}}" type="button" class="btn btn-danger" style="display: inline;width: 75px;">Reject</a>
+                                <a href="/admin/service_professional/accept/{{sp.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;width: 75px;">Accept</a>
+                                <a href="/admin/service_professional/reject/{{sp.id}}/{{uname}}" type="button" class="btn btn-danger" style="display: inline;width: 75px;">Reject</a>
                                 {%elif (sp.status == 'Active')%}
-                                <a href="/service_professional/block/{{sp.id}}/{{uname}}" type="button" class="btn btn-danger" style="display: inline;width: 75px;">Block</a>
+                                <a href="/admin/service_professional/block/{{sp.id}}/{{uname}}" type="button" class="btn btn-danger" style="display: inline;width: 75px;">Block</a>
                                 {%elif (sp.status == 'Blocked')%}
-                                <a href="/service_professional/unblock/{{sp.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;width: 75px;">Unblock</a>
+                                <a href="/admin/service_professional/accept/{{sp.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;width: 75px;">Unblock</a>
                                 {%elif (sp.status == 'Rejected')%}
-                                <a href="/service_professional/accept/{{sp.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;width: 75px;">Accept</a>
+                                <a href="/admin/service_professional/accept/{{sp.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;width: 75px;">Accept</a>
+                                {%elif (sp.status == 'Flagged')%}
+                                <a href="/admin/service_professional/active/{{sp.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;width: 75px;">Unflag</a>
+                                <a href="/admin/service_professional/block/{{sp.id}}/{{uname}}" type="button" class="btn btn-danger" style="display: inline;width: 75px;">Block</a>
                                 {%endif%}
                             </td>
                         </tr>
@@ -129,9 +132,9 @@
                 <p style="margin: auto;"><b>Result for Customers</b></p>
                 </div>
                 {%if customers%}
-                <div style="width:1000px; height:500px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
+                <div style="width:1200px; height:500px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
               
-                  <table cellspacing="0" cellpadding="1" border="1" width="980" style="margin: auto;">
+                  <table cellspacing="0" cellpadding="1" border="1" width="1180" style="margin: auto;">
                     <tr style="color:white;background-color:grey;text-align: center;position: sticky;">
                       <th>Sl No.</th>
                       <th>Customer Name</th>
@@ -141,6 +144,7 @@
                       <th>Customer Location</th>
                       <th>Pincode</th>
                       <th>Status</th>
+                      <th>Action</th>
                   </tr>
                     {%for customer in customers%} 
                   <tr>
@@ -152,6 +156,22 @@
                       <td>{{customer.location}}</td>
                       <td>{{customer.pin_code}}</td>
                       <td>{{customer.status}}</td>
+                      <td>
+                        {%if customer.role != 0%}
+                        {%if (customer.status == 'Active')%}
+                        <a href="/admin/customer/flag/{{customer.id}}/{{uname}}" type="button" class="btn btn-warning" style="display: inline-block;width: 75px;">Flag</a>
+                        <a href="/admin/customer/block/{{customer.id}}/{{uname}}" type="button" class="btn btn-danger" style="display: inline-block;width: 75px;">Block</a>
+                        {%elif (customer.status == 'Flagged')%}
+                        <a href="/admin/customer/block/{{customer.id}}/{{uname}}" type="button" class="btn btn-danger" style="display: inline-block;width: 75px;">Block</a>
+                        <a href="/admin/customer/active/{{customer.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline-block;width: 75px;">Unflag</a>
+                        {%elif (customer.status == 'Blocked')%}
+                        <a href="/admin/customer/unblock/{{customer.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline-block;width: 75px;">Unblock</a>
+                        <a href="/admin/customer/flag/{{customer.id}}/{{uname}}" type="button" class="btn btn-warning" style="display: inline-block;width: 75px;">Flag</a>
+                        {%endif%}
+                        {%else%}
+                        <a href="#" type="button" class="btn btn-success" style="display: inline-block;width: 75px;">Admin</a>
+                        {%endif%}
+                      </td>
                       
                   </tr>
                   {%endfor%}

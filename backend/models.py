@@ -22,7 +22,7 @@ class Customer(db.Model):
     sr = db.relationship('Service_request', cascade = 'all, delete', backref = 'customer', lazy = True) 
     # customer.sr -> list of sr's under the customer
     # sr.customer -> customer object for that sr
-    ratings = db.relationship('Rating', backref = 'customer', lazy = True)
+    ratings = db.relationship('Rating', cascade = 'all, delete', backref = 'customer', lazy = True)
 
 # 2nd Entity - service_professional
 class Service_professional(db.Model):
@@ -48,7 +48,7 @@ class Service_professional(db.Model):
     avg_ratings = db.Column(db.Float)
     # avg_rating = db.Column(db.Integer, default = 0)
     #Defining backreference to enable parent to have access to all the children 
-    sr = db.relationship('Service_request', backref = 'service_professional', lazy = True)
+    sr = db.relationship('Service_request', cascade = 'all, delete', backref = 'service_professional', lazy = True)
     ratings = db.relationship('Rating', cascade = 'all, delete', backref = 'service_professional', lazy = True)
 
 # 3rd Entity - servie_request
@@ -64,7 +64,7 @@ class Service_request(db.Model):
     date_of_completion = db.Column(db.DateTime)
     status = db.Column(db.String, default = 'Requested') # Requested , Assigned, Closed, Rejected
     sp_exit = db.Column(db.Integer, default = 0) # Not-exited - 0, Exited - 1
-    ratings = db.relationship('Rating', backref = 'service_request', lazy = True)
+    ratings = db.relationship('Rating',  cascade = "all, delete", backref = 'service_request', lazy = True)
 
 # 4th Entity - rating
 class Rating(db.Model):

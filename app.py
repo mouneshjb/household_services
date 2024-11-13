@@ -2,6 +2,7 @@
 # Importing required libraries
 from flask import Flask
 from backend.models import db
+from backend.api_controllers import api, SRApi
 
 
 app = None
@@ -10,6 +11,7 @@ def setup_app():
     app = Flask(__name__)
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///mydb.sqlite3" #Sqlite connection
     db.init_app(app) # Flask app is connected to db
+    api.init_app(app)
     app.app_context().push() # Direct access to other module
     app.debug = True
 

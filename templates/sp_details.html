@@ -4,7 +4,7 @@
 <div style="text-align: center;">
     <p style="margin: auto ;"><b>Service Professional Details</b> </p>
   </div>
-  <div style="width:990px; height:450px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
+  <div style="width:990px; height:480px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
                     
     <table cellspacing="0" cellpadding="1" border="1" width="980" style="margin: auto;">
     <tr style="color:white;background-color:grey;text-align: center;position: sticky;">
@@ -76,15 +76,21 @@
     </table>
     <br>
     {%if (sp.status == 'Registered')%}
-    <a href="admin/service_professional/accept/{{sp.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;">Accept</a>
-    <a href="admin/service_professional/reject/{{sp.id}}/{{uname}}" type="button" class="btn btn-danger" style="display: inline;">Reject</a>
+    <a href="/admin/service_professional/accept/{{sp.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline; margin-right: 2px;">Accept</a>
+    <a href="/admin/service_professional/reject/{{sp.id}}/{{uname}}" type="button" class="btn btn-danger" style="display: inline; margin-left: 2px;">Reject</a>
     {%elif (sp.status == 'Active')%}
-    <a href="admin/service_professional/block/{{sp.id}}/{{uname}}" type="button" class="btn btn-danger" style="display: inline;">Block</a>
+    <a href="/admin/service_professional/block/{{sp.id}}/{{uname}}" type="button" class="btn btn-danger" style="display: inline;">Block</a>
     {%elif (sp.status == 'Blocked')%}
-    <a href="admin/service_professional/unblock/{{sp.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;">Unblock</a>
+    <a href="/admin/service_professional/accept/{{sp.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;">Unblock</a>
     {%elif (sp.status == 'Rejected')%}
-    <a href="admin/service_professional/accept/{{sp.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;">Accept</a>
+    <a href="/admin/service_professional/accept/{{sp.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;">Accept</a>
+    {%elif (sp.status == 'Flagged')%}
+    <a href="/admin/service_professional/active/{{sp.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;width: 100px; margin-right: 2px;">Unflag</a>
+    <a href="/admin/service_professional/block/{{sp.id}}/{{uname}}" type="button" class="btn btn-danger" style="display: inline;width: 100px; margin-left: 2px;">Block</a>
     {%endif%}
-  </div>
+
+    <br>
+    <a href="/admin/{{uname}}" type="button" class="btn btn-info" style="margin-top: 10px;">Go Back</a>
+</div>
 
 {%endblock%}

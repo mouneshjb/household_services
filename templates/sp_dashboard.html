@@ -39,11 +39,11 @@
               
               {%if sr.status == 'Requested'%}
 
-              <a href="/sp/accept/{{sr.id}}/{{uid}}/{{uname}}" type="button" class="btn btn-success">Accept</a>
-              <a href="/sp/reject/{{sr.id}}/{{uid}}/{{uname}}" type="button" class="btn btn-outline-danger">Reject</a>
+              <a href="/sp/accept/{{sr.id}}/{{uid}}/{{uname}}" type="button" class="btn btn-success" style="width: 75px;">Accept</a>
+              <a href="/sp/reject/{{sr.id}}/{{uid}}/{{uname}}" type="button" class="btn btn-outline-danger" style="width: 75px;">Reject</a>
 
               {%elif sr.status == 'Assigned'%}
-              <a href="#" type="button" class="btn btn-success">Accepted</a>
+              <a href="#" type="button" class="btn btn-outline-success">Accepted</a>
               {%endif%}
             </td>
         </tr>
@@ -96,15 +96,15 @@
                       <td>{{sr.status}}</td>
                       <td>
                         {%if sr.status == 'Rejected'%}
-                        <a href="#" type="button" class="btn btn-secondary" style="width: 100px;">Rejected</a>
+                        <a href="#" type="button" class="btn btn-outline-secondary" style="width: 100px;">Rejected</a>
                         
                         {%elif (sr.status == 'Closed') and (sr.sp_exit == 0)%}
         
-                        <a href="#" type="button" class="btn btn-outline-primary">Closed</a>
-                        <a href="/sp/exit/{{sr.id}}/{{uid}}/{{uname}}" type="button" class="btn btn-success">Exit?</a>
+                        <a href="#" type="button" class="btn btn-outline-primary" style="width: 75px;">Closed</a>
+                        <a href="/sp/exit/{{sr.id}}/{{uid}}/{{uname}}" type="button" class="btn btn-success"style="width: 75px;">Exit?</a>
                         {%elif (sr.status == 'Closed') and (sr.sp_exit == 1)%}
-                        <a href="#" type="button" class="btn btn-primary">Closed</a>
-                        <a href="#" type="button" class="btn btn-success">Exited</a>
+                        <a href="#" type="button" class="btn btn-outline-primary" style="width: 75px;">Closed</a>
+                        <a href="#" type="button" class="btn btn-outline-success" style="width: 75px;">Exited</a>
                         {%endif%}
                       </td>
                   </tr>

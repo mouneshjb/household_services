@@ -50,26 +50,31 @@
     </tr>
     <tr>
         <td>8</td>
+        <td>Agerage Ratings (/10)</td>
+        <td>{{sp.avg_ratings}}</td>
+    </tr>
+    <tr>
+        <td>9</td>
         <td>Experience Since</td>
         <td>{{sp.exp_since}}</td>
     </tr>
     <tr>
-        <td>9</td>
+        <td>10</td>
         <td>Location</td>
         <td>{{sp.location}}</td>
     </tr>
     <tr>
-        <td>10</td>
+        <td>11</td>
         <td>Pincode</td>
         <td>{{sp.pin_code}}</td>
     </tr>
     <tr>
-        <td>11</td>
+        <td>12</td>
         <td>Contact Number</td>
         <td>{{sp.contact_number}}</td>
     </tr>
     <tr>
-        <td>12</td>
+        <td>13</td>
         <td>Status</td>
         <td>{{sp.status}}</td>
     </tr>
@@ -85,7 +90,7 @@
     {%elif (sp.status == 'Rejected')%}
     <a href="/admin/service_professional/accept/{{sp.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;">Accept</a>
     {%elif (sp.status == 'Flagged')%}
-    <a href="/admin/service_professional/active/{{sp.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;width: 100px; margin-right: 2px;">Unflag</a>
+    <a href="/admin/service_professional/accept/{{sp.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;width: 100px; margin-right: 2px;">Unflag</a>
     <a href="/admin/service_professional/block/{{sp.id}}/{{uname}}" type="button" class="btn btn-danger" style="display: inline;width: 100px; margin-left: 2px;">Block</a>
     {%endif%}
 

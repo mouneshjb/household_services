@@ -300,7 +300,7 @@ def admin_search(uname):
         
         elif search_by == 'customer':
             if search_txt == '':
-                customers = Customer.query.all()
+                customers = Customer.query.filter_by(role = 1).all()
                 return render_template('admin_search.html',search = 'customer', customers = customers, uname=uname)
             else:
                 customer_name = search_by_name(search_by, search_txt)
@@ -440,6 +440,9 @@ def customer_dashboard(uname, uid):
     services = Service.query.all()
     customer = Customer.query.filter_by(id = uid).first()
     service_requests = Service_request.query.filter_by(customer_id = uid).all()
+    # for sr in service_requests:
+    #     sr.date_of_request = datetime.strptime(str(sr.date_of_request), "%Y-%m-%dT%H:%M")
+    # db.session.commit()
     return render_template('customer_dashboard.html', services=services, service_requests = service_requests, uname = uname, uid = uid, customer = customer, action  = 'no_show')
 
 @app.route("/customer/profile/update/<uid>/<uname>", methods = ['GET', 'POST'])
@@ -480,10 +483,15 @@ def raise_sr(service_id, sp_id, uname, uid):
         sp_id = sp_id
         service_id = service.id
         remarks = request.form.get('remarks')
+        
+        # raw_date_of_request = datetime.now()
+        # # Processing datetime
+        # date_of_request = datetime.strptime(raw_date_of_request, "%Y-%m-%dT%H:%M")
+
         raw_date_of_schedule = request.form.get('date_of_schedule')
         # Processing datetime
         date_of_schedule = datetime.strptime(raw_date_of_schedule, "%Y-%m-%dT%H:%M")
-
+    
         new_sr = Service_request(customer_id = customer_id, sp_id = sp_id, service_id = service_id, remarks = remarks, date_of_schedule = date_of_schedule)
         db.session.add(new_sr)
         db.session.commit()
@@ -492,6 +500,25 @@ def raise_sr(service_id, sp_id, uname, uid):
         return redirect(url_for('customer_dashboard', uid = uid, uname = uname))
 
     return render_template('sr_form.html', service = service, sp_id = sp_id, uname = uname, uid = uid)
+
+@app.route("/customer/update_sr/<sr_id>/<uid>/<uname>", methods = ['GET', 'POST'])
+def update_sr(sr_id, uname, uid):
+    sr = Service_request.query.filter_by(id = sr_id).first()
+    if request.method == 'POST':
+        customer_id = uid
+        sr.remarks = request.form.get('remarks')
+        
+        # raw_date_of_request = datetime.now()
+        # # Processing datetime
+        # date_of_request = datetime.strptime(raw_date_of_request, "%Y-%m-%dT%H:%M")
+
+        raw_date_of_schedule = request.form.get('date_of_schedule')
+        # Processing datetime
+        sr.date_of_schedule = datetime.strptime(raw_date_of_schedule, "%Y-%m-%dT%H:%M")
+        db.session.commit()
+        return redirect(url_for('customer_dashboard', uid = uid, uname = uname))
+    else:
+        return render_template('update_sr_form.html', sr=sr, uname = uname, uid = uid)
 
 @app.route("/customer/close_sr/<sr_id>/<uid>/<uname>", methods = ['GET', 'POST'])
 def close_sr(sr_id, uname, uid):
@@ -604,7 +631,7 @@ def customer_summary(uid, uname):
         plt.clf()
         plt.bar(x, y, color='blue', width=0.5)
         plt.title(f"Average Ratings for {customer.name}")
-        plt.xlabel("Customer: {customer.name}")
+        plt.xlabel(f"Customer: {customer.name}")
         plt.ylabel("Average Ratings")
         plt.savefig('static/images/customer_summary2.jpeg')
         

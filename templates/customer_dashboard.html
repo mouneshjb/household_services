@@ -103,8 +103,11 @@
                         </tr>
                           {% for sr in service_requests %} 
                         <tr>
-                            <td><a href="/customer/sr_details/{{sr.id}}/{{uid}}/{{uname}}">{{loop.index}}</a></td>
-                            
+                          {%if sr.status == 'Requested'%}
+                            <td><a href="/customer/update_sr/{{sr.id}}/{{uid}}/{{uname}}">{{loop.index}}</a></td>
+                          {%else%}
+                            <td>{{loop.index}}</td>
+                          {%endif%}
                             <td>{{sr.service.name}}</td>
                             <td>{{sr.service_professional.name}}</td>
                             <td>INR {{sr.service_professional.price}}</td>

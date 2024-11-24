@@ -15,7 +15,7 @@ class Customer(db.Model):
     date_of_signup = db.Column(db.DateTime, default = datetime.now) # NEED TO CONFIRM on type
     contact_number = db.Column(db.String, nullable = False)
     location = db.Column(db.String, nullable = False)
-    pin_code = db.Column(db.Integer, nullable = False)
+    pin_code = db.Column(db.String, nullable = False)
     avg_ratings = db.Column(db.Float)
     status = db.Column(db.String, default = 'Active') # Active , Flagged ,  Blocked
     #Defining backreference to enable parent to have access to all the children 
@@ -38,7 +38,7 @@ class Service_professional(db.Model):
     service_name = db.Column(db.String, nullable = False)
     service_id = db.Column(db.Integer, db.ForeignKey('service.id'), nullable = False)
     description = db.Column(db.String, nullable = False)
-    price = db.Column(db.Integer, nullable = False)
+    price = db.Column(db.Float, nullable = False)
     avg_time = db.Column(db.Float, nullable = False)
     exp_since = db.Column(db.Integer, nullable = False) # NEED TO CONFIRM on type
     location = db.Column(db.String, nullable = False)
@@ -60,7 +60,7 @@ class Service_request(db.Model):
     date_of_request = db.Column(db.DateTime, default = datetime.now) # NEED TO CONFIRM on type
     service_id=db.Column(db.Integer,db.ForeignKey('service.id'), nullable = False)
     remarks = db.Column(db.String, nullable = False)
-    date_of_schedule = db.Column(db.DateTime) # NEED TO CONFIRM on type
+    date_of_schedule = db.Column(db.DateTime, nullable = False) # NEED TO CONFIRM on type
     date_of_completion = db.Column(db.DateTime)
     status = db.Column(db.String, default = 'Requested') # Requested , Assigned, Closed, Rejected
     sp_exit = db.Column(db.Integer, default = 0) # Not-exited - 0, Exited - 1
@@ -86,7 +86,7 @@ class Service(db.Model):
     __tablename__ = 'service'
     id=db.Column(db.Integer,primary_key=True)
     name = db.Column(db.String, nullable = False)
-    base_price = db.Column(db.Integer, nullable = False)
+    base_price = db.Column(db.Float, nullable = False)
     avg_time_req = db.Column(db.Float, nullable = False) # Time in hours
     description = db.Column(db.String, nullable = False)
     sp = db.relationship('Service_professional', cascade = "all, delete", backref = 'service', lazy = True)

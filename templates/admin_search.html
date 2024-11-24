@@ -75,7 +75,7 @@
                                 {%elif (sp.status == 'Rejected')%}
                                 <a href="/admin/service_professional/accept/{{sp.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;width: 75px;">Accept</a>
                                 {%elif (sp.status == 'Flagged')%}
-                                <a href="/admin/service_professional/active/{{sp.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;width: 75px;">Unflag</a>
+                                <a href="/admin/service_professional/accept/{{sp.id}}/{{uname}}" type="button" class="btn btn-success" style="display: inline;width: 75px;">Unflag</a>
                                 <a href="/admin/service_professional/block/{{sp.id}}/{{uname}}" type="button" class="btn btn-danger" style="display: inline;width: 75px;">Block</a>
                                 {%endif%}
                             </td>

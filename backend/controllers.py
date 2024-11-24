@@ -327,6 +327,7 @@ def admin_summary(uname):
     services = Service.query.all()
     
     service_names = []
+    service_names_bar = []
     sr_count = []
     empty_s = []
     avg_service_rating = []
@@ -335,10 +336,18 @@ def admin_summary(uname):
         service_id = service.id
         srs = Service_request.query.filter_by(service_id=service_id).all()
         
+        
         if len(srs) != 0:
             count = len(srs)
             service_names.append(service_name)
             sr_count.append(count)
+            
+        else:
+            empty_s.append(service_name)
+        
+        srs_bar = Service_request.query.filter(Service_request.service_id==service_id, Service_request.status == 'Closed').all()
+        if len(srs_bar) !=0:
+            service_names_bar.append(service_name)
             sps = Service_professional.query.filter_by(service_id=service_id).all()
             c = 0
             sum_rating = 0
@@ -349,8 +358,6 @@ def admin_summary(uname):
                     if c !=0:
                         avg_sp_rating = round((sum_rating/c),2)
                         avg_service_rating.append(avg_sp_rating)
-        else:
-            empty_s.append(service_name)
     
     # plotting pie chart
     
@@ -373,7 +380,7 @@ def admin_summary(uname):
 #### Main thread error - the plot jus being developed from the system and not from the app, it is breeaking the context that the flask
 # has set in, it is generating from the server machine not from  the client side
     # plotting histogram
-    x = service_names
+    x = service_names_bar
     y = avg_service_rating
     plt.clf()
     plt.bar(x, y, color='blue', width=0.5)

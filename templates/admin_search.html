@@ -40,9 +40,9 @@
                     <p style="margin: auto;"><b>Result for Service Professionals</b></p>
                     </div>
                 {%if service_professionals%}
-                      <div style="width:1000px; height:500px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
+                      <div style="width:1200px; height:500px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
                     
-                        <table cellspacing="0" cellpadding="1" border="1" width="980" style="margin: auto;">
+                        <table cellspacing="0" cellpadding="1" border="1" width="1180px" style="margin: auto;">
                           <tr style="color:white;background-color:grey;text-align: center;position: sticky;">
                             <th>Sl No.</th>
                             <th>Name</th>
@@ -51,6 +51,7 @@
                             <th>Base Price</th>
                             <th>Location</th>
                             <th>Document</th>
+                            <th>Avg. Ratings</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -63,6 +64,7 @@
                             <td>INR {{sp.price}}</td>
                             <td>{{sp.location}}</td>
                             <td><a href="/admin/download/document/{{sp.id}}/{{uname}}">Download</a></td>
+                            <td>{{sp.avg_ratings}}</td>
                             <td>{{sp.status}}</td>
                             <td>
                                 {%if (sp.status == 'Registered')%}

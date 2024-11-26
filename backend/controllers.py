@@ -9,10 +9,12 @@ matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 
 
+## HOME or INDEX page##
 @app.route("/")
 def home():
     return render_template('index.html')
 
+## Login Page ##
 @app.route("/login", methods= ['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -46,6 +48,7 @@ def login():
 
     return render_template('login.html', msg='')
 
+## Service professional registration page ##
 @app.route("/signup", methods= ['GET', 'POST'])
 def signup():
     if request.method == 'POST':
@@ -56,9 +59,8 @@ def signup():
         pin_code = request.form.get('pin_code') or None
         contact_number = request.form.get('contact_number') or None
         
-        ### TO BE CHECKED ON THE EXACT VALIDATION
-        # if (uname != '' or pwd != '' or full_name !='' or address != '' or pin_code != int('')):
-            #Cheking if user already exists
+        
+        #Cheking if user already exists
         usr = Customer.query.filter_by(email = uemail).first()
         if usr:
             return render_template('signup.html', msg='User with entered email ID already exists!')
@@ -93,9 +95,8 @@ def register():
         exp_since = request.form.get('exp_since') or None
         service_id = Service.query.filter_by(name = service_name).first().id
 
-        ### TO BE CHECKED ON THE EXACT VALIDATION
-        # if (uname != '' or pwd != '' or full_name !='' or address != '' or pin_code != int('')):
-            #Cheking if user already exists
+        
+        #Cheking if user already exists
         usr = Service_professional.query.filter_by(email = uemail).first()
         if usr:
             services = Service.query.all()
@@ -104,8 +105,7 @@ def register():
         elif (uemail == None or pwd == None or name == None or location == None or pin_code == None or contact_number == None or 
               price == None or avg_time == None or description == None or sp_doc == None or exp_since == None or service_name == None): # sp_doc == None 
             
-            services = Service.query.all()
-            # service_professionals = Service_professional.query.all()   
+            services = Service.query.all()  
             return render_template("sp_registration.html", services = services, msg='Please enter valid details.')
         else:
             # If user is new and to push all this data, we need to create a new_usr object
@@ -118,18 +118,19 @@ def register():
             
             return render_template('login.html', msg='Registration request is submitted! Please try logging in after verification.')
 
-    services = Service.query.all()
-    # service_professionals = Service_professional.query.all()   
+    services = Service.query.all()   
     return render_template("sp_registration.html", services = services)
 
+########################
 #### ADMIN DASHBOARD ####
+#########################
 @app.route("/admin/<uname>")
 def admin_dashboard(uname):
     services = Service.query.all()
     service_professionals1 = Service_professional.query.filter_by(status = 'Registered').all()
     service_professionals2 = Service_professional.query.filter_by(status = 'Rejected').all()
     service_professionals = service_professionals1 + service_professionals2
-    # service_professionals = Service_professional.query(uname).filter(or_(status = 0, status = 1)).all()
+    
     service_requests = Service_request.query.all()
     return render_template('admin_dashboard.html', services=services, service_professionals = service_professionals, service_requests=service_requests, uname = uname)
 
@@ -187,16 +188,19 @@ def update_service(service_id, uname):
                                 action = 'Update Service', uname=uname)
 
 
+## SP DETAILS PAGE ##
 @app.route("/admin/sp_details/<sp_id>/<uname>")
 def sp_details(sp_id, uname):
     sp = Service_professional.query.filter_by(id = sp_id).first()
     return render_template('sp_details.html',sp=sp, uname=uname)
 
+## CUSTOMER DETAILS PAGE ##
 @app.route("/admin/customer_details/<customer_id>/<uname>")
 def customer_details(customer_id, uname):
     customer = Customer.query.filter_by(id = customer_id).first()
     return render_template('customer_details.html',customer=customer, uname=uname)
 
+## Changing customer status to active - unflagging or unblocking
 @app.route("/admin/customer/active/<customer_id>/<uname>", methods= ['GET', 'POST'])
 def admin_customer_activate(customer_id, uname):
     customer = Customer.query.filter_by(id = customer_id).first()
@@ -205,6 +209,7 @@ def admin_customer_activate(customer_id, uname):
     #### ADMIN DASHBOARD ####
     return redirect(url_for('admin_dashboard', uname=uname))
 
+## Flagging customer
 @app.route("/admin/customer/flag/<customer_id>/<uname>", methods= ['GET', 'POST'])
 def admin_customer_flag(customer_id, uname):
     customer = Customer.query.filter_by(id = customer_id).first()
@@ -213,6 +218,7 @@ def admin_customer_flag(customer_id, uname):
     #### ADMIN DASHBOARD ####
     return redirect(url_for('admin_dashboard', uname=uname))
 
+## Blocking customer
 @app.route("/admin/customer/block/<customer_id>/<uname>", methods= ['GET', 'POST'])
 def admin_customer_block(customer_id, uname):
     customer = Customer.query.filter_by(id = customer_id).first()
@@ -221,16 +227,19 @@ def admin_customer_block(customer_id, uname):
     #### ADMIN DASHBOARD ####
     return redirect(url_for('admin_dashboard', uname=uname))
 
+## SR details page
 @app.route("/admin/sr_details/<sr_id>/<uname>")
 def sr_details(sr_id, uname):
     sr = Service_request.query.filter_by(id = sr_id).first()
     return render_template('request_details.html',sr=sr, uname=uname)
 
+## Downloading the verification document
 @app.route("/admin/download/document/<sp_id>/<uname>", methods= ['GET', 'POST'])
 def download_sp_doc(sp_id, uname):
     sp = Service_professional.query.filter_by(id = sp_id).first()
     return send_file(BytesIO(sp.doc_data), download_name = sp.doc_name, as_attachment=True)
 
+## Accepting SP registration request after review 
 @app.route("/admin/service_professional/accept/<sp_id>/<uname>", methods= ['GET', 'POST'])
 def admin_sp_accept(sp_id, uname):
     sp = Service_professional.query.filter_by(id = sp_id).first()
@@ -239,7 +248,7 @@ def admin_sp_accept(sp_id, uname):
     #### ADMIN DASHBOARD ####
     return redirect(url_for('admin_dashboard', uname=uname))
     
-
+## Rejecting SP registration request
 @app.route("/admin/service_professional/reject/<sp_id>/<uname>", methods= ['GET', 'POST'])
 def admin_sp_reject(sp_id, uname):
     sp = Service_professional.query.filter_by(id = sp_id).first()
@@ -248,6 +257,7 @@ def admin_sp_reject(sp_id, uname):
     #### ADMIN DASHBOARD ####
     return redirect(url_for('admin_dashboard', uname=uname))
 
+## Blocking SP
 @app.route("/admin/service_professional/block/<sp_id>/<uname>", methods= ['GET', 'POST'])
 def admin_sp_block(sp_id, uname):
     sp = Service_professional.query.filter_by(id = sp_id).first()
@@ -256,34 +266,38 @@ def admin_sp_block(sp_id, uname):
     #### ADMIN DASHBOARD ####
     return redirect(url_for('admin_dashboard', uname=uname))
 
-
+### ADMIN SERACH FUNCTIONALITY ### 
 
 @app.route("/admin/search/<uname>",  methods= ['GET', 'POST'])
 def admin_search(uname):
     if request.method == 'POST':
         search_by = request.form.get('search_by') or None
         search_txt = request.form.get('search_txt')
+        # Searching by service
         if search_by == 'service':
-            if search_txt == '':
+            if search_txt == '': # if nothing mentioned, show all results
                 services = Service.query.all()
                 return render_template('admin_search.html',search = 'service', services = services, uname=uname)
             else:
-                service_name = search_by_name(search_by, search_txt)
+                ## SERVICE - NAME
+                service_name = search_by_name(search_by, search_txt) ## SERVICE - NAME
                 return render_template('admin_search.html',search = 'service', services = service_name, uname=uname)
-        elif search_by == 'request':
+        elif search_by == 'request': # if nothing mentioned, show all results
             if search_txt == '':
                 service_requests = Service_request.query.all()
                 return render_template('admin_search.html',search = 'request', service_requests = service_requests, uname=uname)
             else:
+                ## REQUEST - STATUS
                 request_status = search_by_status(search_by, search_txt)
                 if request_status:
                     return render_template('admin_search.html',search = 'request', service_requests = request_status, uname=uname)
         
-        elif search_by == 'sp':
-            if search_txt == '':
+        elif search_by == 'sp': 
+            if search_txt == '': # if nothing mentioned, show all results
                 service_professionals = Service_professional.query.all()
                 return render_template('admin_search.html',search = 'sp', service_professionals = service_professionals, uname=uname)
             else:
+                ## SP - NAME or LOCATION or PINCODE or STATUS
                 sp_name = search_by_name(search_by, search_txt)
                 sp_location = search_by_location(search_by, search_txt)
                 sp_pin = search_by_pincode(search_by, search_txt)
@@ -299,10 +313,11 @@ def admin_search(uname):
         
         
         elif search_by == 'customer':
-            if search_txt == '':
+            if search_txt == '': # if nothing mentioned, show all results
                 customers = Customer.query.filter_by(role = 1).all()
                 return render_template('admin_search.html',search = 'customer', customers = customers, uname=uname)
-            else:
+            else: 
+                ## SP - NAME or LOCATION or PINCODE or STATUS
                 customer_name = search_by_name(search_by, search_txt)
                 customer_location = search_by_location(search_by, search_txt)
                 customer_pin = search_by_pincode(search_by, search_txt)
@@ -321,7 +336,9 @@ def admin_search(uname):
     
     return redirect(url_for('admin_dashboard', uname=uname))
 
-### ADMIN SUMMARY
+#####################
+### ADMIN SUMMARY ###
+#####################
 @app.route("/admin/summary/<uname>",  methods= ['GET', 'POST'])
 def admin_summary(uname):
     services = Service.query.all()
@@ -334,8 +351,8 @@ def admin_summary(uname):
     for service in services:
         service_name = service.name
         service_id = service.id
+        # Logic for pie chart - Services with at least one SR (closed or open)
         srs = Service_request.query.filter_by(service_id=service_id).all()
-        
         
         if len(srs) != 0:
             count = len(srs)
@@ -343,8 +360,10 @@ def admin_summary(uname):
             sr_count.append(count)
             
         else:
+            # To track the services with no SRs
             empty_s.append(service_name)
         
+        # Logic for bar chart - SPs with all service types of closed status
         srs_bar = Service_request.query.filter(Service_request.service_id==service_id, Service_request.status == 'Closed').all()
         if len(srs_bar) !=0:
             service_names_bar.append(service_name)
@@ -367,15 +386,6 @@ def admin_summary(uname):
     plt.legend(title = 'Service Name')
     plt.savefig('./static/images/admin_summary1.jpeg')
     
-    # x = service_names
-    # y = sr_count
-    # plt.bar(x, y, color='blue', width=0.5)
-    # plt.title("Service Requests Summary")
-    # plt.xlabel("Service Names")
-    # plt.ylabel("Service Requests Count")
-    # plt.savefig('./static/images/admin_summary1.jpeg')
-    # plt.clf()
-
 
 #### Main thread error - the plot jus being developed from the system and not from the app, it is breeaking the context that the flask
 # has set in, it is generating from the server machine not from  the client side
@@ -392,14 +402,12 @@ def admin_summary(uname):
     return render_template('admin_summary.html', empty_s = empty_s, uname = uname)
 
 # Other supported functions
-def search_by_name(search_by, search_txt):
+# NAME and other attribute (service/ SP / customer )
+def search_by_name(search_by, search_txt): 
     if search_by == 'service':
         services = Service.query.filter(Service.name.ilike(f"%{search_txt}%")).all()
         return services
-    # if search_by == 'request':
-    #     # requests = Service_request.query.filter(service_request.service.name.ilike(f"%{search_txt}%")).all()
-    #     requests = Service.query.filter(Service.name.ilike(f"%{search_txt}%")).all()
-    #     return requests
+   
     if search_by == 'sp':
         sp = Service_professional.query.filter(Service_professional.name.ilike(f"%{search_txt}%")).all()
         return sp
@@ -407,10 +415,9 @@ def search_by_name(search_by, search_txt):
         customer = Customer.query.filter(Customer.name.ilike(f"%{search_txt}%")).all()
         return customer
 
-def search_by_location(search_by, search_txt):
-    # if search_by == 'request':
-    #     requests = Service_request.query.filter(Service_request.customer.location.ilike(f"%{search_txt}%")).all()
-    #     return requests
+# LOCATION and other attribute (service/ SP / customer )
+def search_by_location(search_by, search_txt): 
+    
     if search_by == 'sp':
         sp = Service_professional.query.filter(Service_professional.location.ilike(f"%{search_txt}%")).all()
         return sp
@@ -418,10 +425,9 @@ def search_by_location(search_by, search_txt):
         customer = Customer.query.filter(Customer.location.ilike(f"%{search_txt}%")).all()
         return customer
 
-def search_by_pincode(search_by, search_txt):
-    # if search_by == 'request':
-    #     requests = Service_request.query.filter(Service_request.customer.pin_code.ilike(f"%{search_txt}%")).all()
-    #     return requests
+# PINCODE and other attribute (service/ SP / customer )
+def search_by_pincode(search_by, search_txt): 
+    
     if search_by == 'sp':
         sp = Service_professional.query.filter(Service_professional.pin_code.ilike(f"%{search_txt}%")).all()
         return sp
@@ -429,6 +435,7 @@ def search_by_pincode(search_by, search_txt):
         customer = Customer.query.filter(Customer.pin_code.ilike(f"%{search_txt}%")).all()
         return customer
 
+# STATUS and other attribute (service/ SP / customer )
 def search_by_status(search_by, search_txt):
     if search_by == 'request':
         requests = Service_request.query.filter(Service_request.status.ilike(f"%{search_txt}%")).all()
@@ -441,15 +448,16 @@ def search_by_status(search_by, search_txt):
         return customer
     
 #### CUSTOMER CONTROLS ########
+
+############################
 #### CUSTOMER DASHBOARD ####
+############################
 @app.route("/customer/<uid>/<uname>")
 def customer_dashboard(uname, uid):
     services = Service.query.all()
     customer = Customer.query.filter_by(id = uid).first()
     service_requests = Service_request.query.filter_by(customer_id = uid).all()
-    # for sr in service_requests:
-    #     sr.date_of_request = datetime.strptime(str(sr.date_of_request), "%Y-%m-%dT%H:%M")
-    # db.session.commit()
+   
     return render_template('customer_dashboard.html', services=services, service_requests = service_requests, uname = uname, uid = uid, customer = customer, action  = 'no_show')
 
 @app.route("/customer/profile/update/<uid>/<uname>", methods = ['GET', 'POST'])
@@ -491,9 +499,7 @@ def raise_sr(service_id, sp_id, uname, uid):
         service_id = service.id
         remarks = request.form.get('remarks')
         
-        # raw_date_of_request = datetime.now()
-        # # Processing datetime
-        # date_of_request = datetime.strptime(raw_date_of_request, "%Y-%m-%dT%H:%M")
+        
 
         raw_date_of_schedule = request.form.get('date_of_schedule')
         # Processing datetime
@@ -515,9 +521,6 @@ def update_sr(sr_id, uname, uid):
         customer_id = uid
         sr.remarks = request.form.get('remarks')
         
-        # raw_date_of_request = datetime.now()
-        # # Processing datetime
-        # date_of_request = datetime.strptime(raw_date_of_request, "%Y-%m-%dT%H:%M")
 
         raw_date_of_schedule = request.form.get('date_of_schedule')
         # Processing datetime
@@ -596,7 +599,8 @@ def customer_search(uname, uid):
 
     return redirect(url_for('customer_dashboard', uid = uid, uname=uname))
 
-### CUSTOMER SUMMARY
+### CUSTOMER SUMMARY ###
+
 @app.route("/customer/summary/<uid>/<uname>",  methods= ['GET', 'POST'])
 def customer_summary(uid, uname):
     
@@ -645,10 +649,12 @@ def customer_summary(uid, uname):
     return render_template('customer_summary.html', uname = uname, empty_s = empty_s, uid = uid)
 
 
+##### SP CONTROLS #####
 
-
-
+######################
 #### SP DASHBOARD ####
+######################
+
 @app.route("/sp/<uid>/<uname>")
 def sp_dashboard(uid, uname):
     open_service_requests = Service_request.query.filter_by(sp_id = uid, status = 'Requested').all() + Service_request.query.filter_by(sp_id = uid, status = 'Assigned').all()
@@ -763,23 +769,14 @@ def sp_search(uname, uid):
 
     return redirect(url_for('customer_dashboard', uid = uid, uname=uname))
 
-### SP SUMMARY
+#### SP SUMMARY ####
+
 @app.route("/sp/summary/<uid>/<uname>",  methods= ['GET', 'POST'])
 def sp_summary(uid, uname):
     
     sp = Service_professional.query.filter_by(id=uid).first()
     empty_s = ['Requested','Assigned', 'Closed', 'Rejected']
-    # empty_s = []
-    # valid_status = valid_count = []
-
-    # for status in sr_status:
-    #     sr_list = list(Service_request.query.filter(Service_request.sp_id==uid, Service_request.status == status).all())
-    #     if len(sr_list) != 0:
-            
-    #         valid_status.append(status)
-    #         valid_count.append(float(len(sr_list)))
-    #     else:
-    #         empty_s.append(status)
+    
     sr_list = list(Service_request.query.filter(Service_request.sp_id==uid).all())
     d = {}
     for sr in sr_list:
@@ -803,14 +800,6 @@ def sp_summary(uid, uname):
         plt.legend(title = 'Status')
         plt.savefig('./static/images/sp_summary1.jpeg')
     
-    # x = service_names
-    # y = sr_count
-    # plt.bar(x, y, color='blue', width=0.5)
-    # plt.title("Service Requests Summary")
-    # plt.xlabel("Service Names")
-    # plt.ylabel("Service Requests Count")
-    # plt.savefig('./static/images/admin_summary1.jpeg')
-    # plt.clf()
 
 
 #### Main thread error - the plot jus being developed from the system and not from the app, it is breeaking the context that the flask

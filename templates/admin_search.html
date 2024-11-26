@@ -94,9 +94,9 @@
                     <p style="margin: auto;"><b>Result for Service Requests</b></p>
                     </div>
                       {%if service_requests%}
-                      <div style="width:1000px; height:500px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
+                      <div style="width:1200px; height:500px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
                     
-                        <table cellspacing="0" cellpadding="1" border="1" width="980" style="margin: auto;">
+                        <table cellspacing="0" cellpadding="1" border="1" width="1180" style="margin: auto;">
                           <tr style="color:white;background-color:grey;text-align: center;position: sticky;">
                             <th>Sl No.</th>
                             <th>Customer Name</th>
@@ -145,6 +145,7 @@
                       <th>Contact Number</th>
                       <th>Customer Location</th>
                       <th>Pincode</th>
+                      <th>Avg Ratings</th>
                       <th>Status</th>
                       <th>Action</th>
                   </tr>
@@ -157,6 +158,7 @@
                       <td>{{customer.contact_number}}</td>
                       <td>{{customer.location}}</td>
                       <td>{{customer.pin_code}}</td>
+                      <td>{{customer.avg_ratings}}</td>
                       <td>{{customer.status}}</td>
                       <td>
                         {%if customer.role != 0%}

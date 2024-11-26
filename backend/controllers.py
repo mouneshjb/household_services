@@ -460,6 +460,7 @@ def customer_dashboard(uname, uid):
    
     return render_template('customer_dashboard.html', services=services, service_requests = service_requests, uname = uname, uid = uid, customer = customer, action  = 'no_show')
 
+# Updating profile
 @app.route("/customer/profile/update/<uid>/<uname>", methods = ['GET', 'POST'])
 def update_customer_profile(uname, uid):
     customer = Customer.query.filter_by(id = uid).first()
@@ -490,6 +491,7 @@ def dashboard_services(service_id, uname, uid):
     service_requests = Service_request.query.filter_by(customer_id = uid).all()
     return render_template('customer_dashboard.html', uname = uname, uid = uid, service = service, service_requests = service_requests, service_professionals = service_professionals, action = 'show')
 
+# Raise new SR
 @app.route("/customer/raise_sr/<service_id>/<sp_id>/<uid>/<uname>", methods = ['GET', 'POST'])
 def raise_sr(service_id, sp_id, uname, uid):
     service = Service.query.filter_by(id = service_id).first()
@@ -514,6 +516,7 @@ def raise_sr(service_id, sp_id, uname, uid):
 
     return render_template('sr_form.html', service = service, sp_id = sp_id, uname = uname, uid = uid)
 
+# Update an existing SR
 @app.route("/customer/update_sr/<sr_id>/<uid>/<uname>", methods = ['GET', 'POST'])
 def update_sr(sr_id, uname, uid):
     sr = Service_request.query.filter_by(id = sr_id).first()
@@ -530,6 +533,7 @@ def update_sr(sr_id, uname, uid):
     else:
         return render_template('update_sr_form.html', sr=sr, uname = uname, uid = uid)
 
+# Close a SR
 @app.route("/customer/close_sr/<sr_id>/<uid>/<uname>", methods = ['GET', 'POST'])
 def close_sr(sr_id, uname, uid):
     sr = Service_request.query.filter_by(id = sr_id).first()
@@ -537,6 +541,7 @@ def close_sr(sr_id, uname, uid):
     db.session.commit()
     return render_template('customer_review_form.html', sr = sr, uid = uid, uname = uname)
 
+# Rating SP after closing a SR
 @app.route("/customer/rate_sr/<sr_id>/<uid>/<uname>", methods = ['GET', 'POST'])
 def rate_sr(sr_id, uname, uid):
     sr = Service_request.query.filter_by(id = sr_id).first()
@@ -571,6 +576,7 @@ def rate_sr(sr_id, uname, uid):
         db.session.commit()
         return redirect(url_for('customer_dashboard', uid = uid, uname = uname))
 
+### CUSTOMER SEARCH ###
 
 @app.route("/customer/search/<uid>/<uname>",  methods= ['GET', 'POST'])
 def customer_search(uname, uid):
@@ -663,6 +669,7 @@ def sp_dashboard(uid, uname):
     return render_template('sp_dashboard.html', sp = sp, open_service_requests=open_service_requests, 
                            closed_service_requests=closed_service_requests, uname = uname, uid = uid)
 
+## SP Response on SR ##
 @app.route("/sp/accept/<sr_id>/<uid>/<uname>")
 def sp_accept(sr_id, uid, uname):
     sr = Service_request.query.filter_by(id = sr_id).first()
@@ -683,6 +690,8 @@ def sp_exit(sr_id, uid, uname):
     sr.sp_exit = 1
     db.session.commit()
     return render_template('sp_review_form.html', sr = sr, uid = uid, uname = uname)
+
+## SP rating customer ##
 
 @app.route("/sp/rate_sr/<sr_id>/<uid>/<uname>", methods = ['GET', 'POST'])
 def sp_rate_sr(sr_id, uname, uid):
@@ -716,6 +725,7 @@ def sp_rate_sr(sr_id, uname, uid):
         return redirect(url_for('sp_dashboard', uid = uid, uname = uname))
     return render_template('service_rating.html', sr = sr, uid = uid, uname = uname, reviewer = 'sp')
 
+## Update profile
 @app.route("/sp/profile/update/<uid>/<uname>", methods = ['GET', 'POST'])
 def update_sp_profile(uname, uid):
     sp = Service_professional.query.filter_by(id = uid).first()
@@ -744,6 +754,8 @@ def update_sp_profile(uname, uid):
         return redirect(url_for('sp_dashboard', uname=sp.name, uid=uid))
 
     return render_template('sp_profile_update.html', uname = sp.name, uid = uid, sp = sp)
+
+### SP SEARCH ###
 
 @app.route("/sp/search/<uid>/<uname>",  methods= ['GET', 'POST'])
 def sp_search(uname, uid):

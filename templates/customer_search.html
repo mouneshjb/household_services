@@ -1,7 +1,7 @@
 {%extends "customer_layout.html"%} <!--Inherited all nav features-->
 {%block content%}
 
-
+          {%if param == 'sp'%}
                 {%if service_professionals%}
                 <div style="text-align: center; margin: auto;">
                     <p style="margin: auto;"><b>Result for the search</b></p>
@@ -51,8 +51,72 @@
                         {%else%}
                       <br>
                       <div style="margin: auto;text-align: center;border: 1px;"><h2>No services found!</h2></div>
+                    
+                      </div>
+                      {%endif%}
+                {%else%}
+              {%if service_requests%}
+                <div style="text-align: center; margin: auto;">
+                    <p style="margin: auto;"><b>Result for the search</b></p>
+                    </div>
+                      <div style="width:1200px; height:500px; overflow-y:auto;margin: auto;margin-bottom: 10px; text-align: center; border: 1px solid black;">
+                    
+                        <table cellspacing="0" cellpadding="1" border="1" width="1180px" style="margin: auto;">
+                          <tr style="color:white;background-color:grey;text-align: center;position: sticky;">
+                            <th>Sl No.</th>
+                            
+                            <th>Service Name</th>
+                            <th>Professional Name</th>
+                            <th>Price</th>
+                            <th>Professional Location</th>
+                            <th>Pincode</th>
+                            <th>Date of request</th>
+                            <th>Date of schedule</th>
+                            <th>Status</th>
+                            <th style="width: 15%;">Action</th>
+                        </tr>
+                            {% for sr in service_requests %} 
+                            <tr>
+                              {%if sr.status == 'Requested'%}
+                                <td><a href="/customer/update_sr/{{sr.id}}/{{uid}}/{{uname}}">{{loop.index}}</a></td>
+                              {%else%}
+                                <td>{{loop.index}}</td>
+                              {%endif%}
+                                <td>{{sr.service.name}}</td>
+                                <td>{{sr.service_professional.name}}</td>
+                                <td>INR {{sr.service_professional.price}}</td>
+                                <td>{{sr.service_professional.location}}</td>
+                                <td>{{sr.service_professional.pin_code}}</td>
+                                <td>{{sr.date_of_request}}</td>
+                                <td>{{sr.date_of_schedule}}</td>
+                                <td>{{sr.status}}</td>
+                                <td>
+                                  {%if sr.status == 'Requested'%}
+                                  <a href="#" type="button" class="btn btn-outline-secondary" style="width: 100px;">No Action</a>
+                                  
+                                  {%elif sr.status == 'Assigned'%}
+                  
+                                  <a href="#" type="button" class="btn btn-outline-primary">Assigned</a>
+                                  <a href="/customer/close_sr/{{sr.id}}/{{uid}}/{{uname}}" type="button" class="btn btn-success">Close?</a>
+    
+                                  {%elif sr.status == 'Closed'%}
+                  
+                                  <a href="#" type="button" class="btn btn-outline-success" style="width: 100px;">Closed</a>
+                                  {%elif sr.status == 'Rejected'%}
+                  
+                                  <a href="#" type="button" class="btn btn-outline-danger" style="width: 100px;">Rejected</a>
+                                  {%endif%}
+                                </td>
+                            </tr>
+                          {% endfor %}
+                          </table>  
+                        {%else%}
+                      <br>
+                      <div style="margin: auto;text-align: center;border: 1px;"><h2>No results found!</h2></div>
                     {%endif%}
                       </div>
+
+                      {%endif%}
 
     
                 

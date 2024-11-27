@@ -583,25 +583,38 @@ def customer_search(uname, uid):
     if request.method == 'POST':
         search_by = request.form.get('search_by') or None
         search_txt = request.form.get('search_txt')
+        # Searching by service name
         if search_by == 'service':
             if search_txt == '':
                 service_professionals = Service_professional.query.all()
                 # service_requests = Service_request.query.filter_by(customer_id = uid).all()
-                return render_template('customer_search.html', service_professionals = service_professionals, uid = uid, uname=uname)
+                return render_template('customer_search.html', param = 'sp', service_professionals = service_professionals, uid = uid, uname=uname)
             else:
                 service_professionals = Service_professional.query.filter(Service_professional.service_name.ilike(f"%{search_txt}%")).all()
                 # service_requests = Service_request.query.filter(Service_requests.service.name.ilike(f"%{search_txt}%")).all()
-                return render_template('customer_search.html', service_professionals = service_professionals, uid = uid, uname=uname)
+                return render_template('customer_search.html', param = 'sp', service_professionals = service_professionals, uid = uid, uname=uname)
         
+        # Searching by location name
         elif search_by == 'location':
             if search_txt == '':
                 service_professionals = Service_professional.query.all()
                 service_requests = Service_request.query.filter_by(customer_id = uid).all()
-                return render_template('customer_search.html', service_professionals = service_professionals, service_requests = service_requests, uid = uid, uname=uname)
+                return render_template('customer_search.html', param = 'sp', service_professionals = service_professionals, service_requests = service_requests, uid = uid, uname=uname)
             else:
                 service_professionals = Service_professional.query.filter(Service_professional.location.ilike(f"%{search_txt}%")).all()
                 # service_requests = Service_request.query.filter(Service_request.service_professional.location.ilike(f"%{search_txt}%")).all()
-                return render_template('customer_search.html', service_professionals = service_professionals, uid = uid, uname=uname)
+                return render_template('customer_search.html', param = 'sp', service_professionals = service_professionals, uid = uid, uname=uname)
+        
+        # Searching by SR and its date or status
+        elif search_by == 'request': 
+            if search_txt == '':
+                service_requests = Service_request.query.filter_by(customer_id = uid).all()
+                return render_template('customer_search.html', param = 'request', service_requests = service_requests, uid = uid, uname=uname)
+            else:
+                service_requests1 = Service_request.query.filter(Service_request.date_of_schedule.ilike(f"%{search_txt}%"), Service_request.customer_id == uid).all()
+                service_requests2 = Service_request.query.filter(Service_request.status.ilike(f"%{search_txt}%"), Service_request.customer_id == uid).all()
+                service_requests = service_requests1 + service_requests2
+                return render_template('customer_search.html', param = 'request', service_requests = service_requests, uid = uid, uname=uname)
 
     return redirect(url_for('customer_dashboard', uid = uid, uname=uname))
 

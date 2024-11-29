@@ -9,14 +9,21 @@
     <div style="text-align: center;margin: auto;">
     <div style="display: inline-block; border: 1px solid black;margin-right: 50px;">
         <p style="margin-top: 5px;"><b>Service Requests Status Summary</b> </p>
-        
+        {%if no_pie%}
+        <p style="margin-top: 5px;">No service requests raised yet!</p>
+        {%else%}
         <img src= '/static/images/customer_summary1.jpeg' alt="Service Requests Summary" width="400", height="300" style="margin: 20px;">
-        </div>
+        {%endif%}    
+    </div>
         <div style="display: inline-block;border: 1px solid black;margin-left: 50px;">
-            <p style="margin-top: 5px;"><b>Average ratings given by service professionals</b> </p>
             
+            <p style="margin-top: 5px;"><b>Average ratings given by service professionals</b> </p>
+            {%if ratings%}
             <img src= '/static/images/customer_summary2.jpeg' alt="Average Ratings Summary" width="400", height="300" style="margin: 20px;">
-            </div>
+            {%else%}
+            <p style="margin-top: 5px;">No ratings recieved yet!</p>
+            {%endif%}
+        </div>
         </div>
         
         <br>

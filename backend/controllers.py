@@ -644,13 +644,14 @@ def customer_summary(uid, uname):
 
     # plotting pie chart
     if d != {}:
+        no_pie = False
         plt.clf()
         plt.pie(count, labels = status_li, shadow=True, autopct='%1.1f%%')
         plt.title("Service Requests Status Summary")
         plt.legend(title = 'Status')
         plt.savefig('./static/images/customer_summary1.jpeg')
-    
-
+    else:
+        no_pie = True
 
 #### Main thread error - the plot jus being developed from the system and not from the app, it is breeaking the context that the flask
 # has set in, it is generating from the server machine not from  the client side
@@ -664,8 +665,8 @@ def customer_summary(uid, uname):
         plt.xlabel(f"Customer: {customer.name}")
         plt.ylabel("Average Ratings")
         plt.savefig('static/images/customer_summary2.jpeg')
-        
-    return render_template('customer_summary.html', uname = uname, empty_s = empty_s, uid = uid)
+    ratings = customer.avg_ratings 
+    return render_template('customer_summary.html', ratings = ratings, no_pie = no_pie, uname = uname, empty_s = empty_s, uid = uid)
 
 
 ##### SP CONTROLS #####
@@ -819,11 +820,14 @@ def sp_summary(uid, uname):
 
     # plotting pie chart
     if status_li != []:
+        no_pie = False
         plt.clf()
         plt.pie(count, labels = status_li, shadow=True, autopct='%1.1f%%')
         plt.title("Service Requests Status Summary")
         plt.legend(title = 'Status')
         plt.savefig('./static/images/sp_summary1.jpeg')
+    else:
+        no_pie = True
     
 
 
@@ -839,5 +843,5 @@ def sp_summary(uid, uname):
         plt.xlabel("Service Professional")
         plt.ylabel("Average Ratings")
         plt.savefig('static/images/sp_summary2.jpeg')
-    
-    return render_template('sp_summary.html', uname = uname, empty_s = empty_s, uid = uid)
+    ratings = sp.avg_ratings
+    return render_template('sp_summary.html', no_pie = no_pie, ratings = ratings, uname = uname, empty_s = empty_s, uid = uid)

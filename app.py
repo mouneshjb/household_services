@@ -4,7 +4,6 @@ from flask import Flask
 from backend.models import db
 from backend.api_controllers import api, SRApi
 
-
 app = None
 
 def setup_app():

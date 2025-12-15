@@ -47,7 +47,7 @@ source venv/bin/activate
 ```
 For Windows:
 ```
-venv\\Scripts\\activate
+venv\Scripts\activate
 ```
 
 ### 4. Install Required Backend Package Dependencies

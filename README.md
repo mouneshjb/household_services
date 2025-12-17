@@ -57,7 +57,7 @@ pip install -r requirements.txt
 
 ### 5. Run the Backend
 ```bash
-python run.py
+python app.py
 ```
 
 ✨ You are all set!
